@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+scholar-scaffold/node_modules/
+
+# Build output
+scholar-scaffold/dist/
+scholar-scaffold/build/
+
+# Environment files
+.env
+.env.local
+.env.production
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+venv/
+env/
+backend/venv/
+backend/env/
+backend/instance/
+
+# Database (local SQLite — don't commit)
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+*.map
