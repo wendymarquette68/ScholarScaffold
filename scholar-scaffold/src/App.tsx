@@ -23,6 +23,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function ConsentGate({ children }: { children: React.ReactNode }) {
+  const { user } = useUser();
+  if (user && (user.consentFlag === null || user.consentFlag === undefined)) {
+    return <Navigate to="/consent" replace />;
+  }
+  return <>{children}</>;
+}
+
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,9 +73,11 @@ export default function App() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <DashboardPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <DashboardPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -75,9 +85,11 @@ export default function App() {
         path="/research-strategy"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <ResearchStrategyPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <ResearchStrategyPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -85,9 +97,11 @@ export default function App() {
         path="/design-literacy"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <DesignLiteracyPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <DesignLiteracyPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -95,9 +109,11 @@ export default function App() {
         path="/articles"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <ArticleListPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <ArticleListPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -105,9 +121,11 @@ export default function App() {
         path="/articles/new"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <AddArticlePage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <AddArticlePage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -115,9 +133,11 @@ export default function App() {
         path="/articles/:id"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <ArticleReviewPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <ArticleReviewPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -125,9 +145,11 @@ export default function App() {
         path="/bibliography"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <BibliographyPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <BibliographyPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -135,9 +157,11 @@ export default function App() {
         path="/proposal"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <ProposalPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <ProposalPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
@@ -145,9 +169,11 @@ export default function App() {
         path="/rubric"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <RubricPage />
-            </AppLayout>
+            <ConsentGate>
+              <AppLayout>
+                <RubricPage />
+              </AppLayout>
+            </ConsentGate>
           </ProtectedRoute>
         }
       />
