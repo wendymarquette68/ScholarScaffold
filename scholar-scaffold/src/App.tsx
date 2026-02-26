@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useUser } from './context/UserContext';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
-import { BookOpen } from 'lucide-react';
+import { FullPageSpinner } from './components/common/Spinner';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ConsentPage from './pages/ConsentPage';
@@ -47,14 +47,7 @@ export default function App() {
   const { isLoading } = useUser();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 flex items-center justify-center">
-        <div className="text-center">
-          <BookOpen className="w-12 h-12 text-primary-600 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500 text-sm">Loading your workspace...</p>
-        </div>
-      </div>
-    );
+    return <FullPageSpinner label="Loading your workspace..." />;
   }
 
   return (

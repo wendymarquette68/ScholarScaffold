@@ -3,11 +3,14 @@ import { useUser } from '../context/UserContext';
 import ConsentModal from '../components/common/ConsentModal';
 import { useEffect, useState } from 'react';
 import { saveConsentFlag } from '../services/api';
+import { FullPageSpinner } from '../components/common/Spinner';
+import { useToast } from '../context/ToastContext';
 
 export default function ConsentPage() {
   const { user, updateConsentFlag } = useUser();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (user?.consentFlag !== null && user?.consentFlag !== undefined) {
@@ -21,9 +24,11 @@ export default function ConsentPage() {
     try {
       await saveConsentFlag(user.id, consent);
       updateConsentFlag(consent);
+      showToast('Preference saved!', 'success');
       navigate('/dashboard', { replace: true });
     } catch {
       updateConsentFlag(consent);
+      showToast('Preference saved locally.', 'warning');
       navigate('/dashboard', { replace: true });
     } finally {
       setSaving(false);
@@ -31,11 +36,7 @@ export default function ConsentPage() {
   };
 
   if (saving) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Saving your preference...</p>
-      </div>
-    );
+    return <FullPageSpinner label="Saving your preference..." />;
   }
 
   return <ConsentModal onConsent={handleConsent} />;

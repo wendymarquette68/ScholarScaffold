@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { registerUser } from '../services/api';
 import { BookOpen } from 'lucide-react';
+import Spinner from '../components/common/Spinner';
+import { useToast } from '../context/ToastContext';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -13,6 +15,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useUser();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,12 +35,15 @@ export default function RegisterPage() {
       const data = await registerUser(email, password, name);
       if (data.success) {
         login(data.user);
+        showToast('Account created successfully!', 'success');
         navigate('/consent');
       } else {
         setError(data.error || 'Registration failed.');
+        showToast(data.error || 'Registration failed.', 'error');
       }
     } catch {
       setError('Cannot connect to server. Make sure the backend is running.');
+      showToast('Cannot connect to server.', 'error');
     } finally {
       setLoading(false);
     }
@@ -107,9 +113,9 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? <><Spinner size="sm" /> Creating Account...</> : 'Create Account'}
           </button>
         </form>
 

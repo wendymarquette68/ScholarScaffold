@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { loginUser } from '../services/api';
 import { BookOpen } from 'lucide-react';
+import Spinner from '../components/common/Spinner';
+import { useToast } from '../context/ToastContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const { login } = useUser();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +24,7 @@ export default function LoginPage() {
       const data = await loginUser(email, password);
       if (data.success) {
         login(data.user);
+        showToast('Welcome back!', 'success');
         if (data.user.consentFlag === null) {
           navigate('/consent');
         } else {
@@ -28,9 +32,11 @@ export default function LoginPage() {
         }
       } else {
         setError(data.error || 'Invalid credentials.');
+        showToast(data.error || 'Invalid credentials.', 'error');
       }
     } catch {
       setError('Cannot connect to server. Make sure the backend is running.');
+      showToast('Cannot connect to server.', 'error');
     } finally {
       setLoading(false);
     }
@@ -77,9 +83,10 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors"
+            disabled={loading}
+            className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Sign In
+            {loading ? <><Spinner size="sm" /> Signing in...</> : 'Sign In'}
           </button>
         </form>
 
