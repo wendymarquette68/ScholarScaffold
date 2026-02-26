@@ -36,13 +36,13 @@
 ### Backend — Render
 - **Dashboard:** https://dashboard.render.com
 - **Service name:** ScholarScaffold
-- **Runtime:** Python 3 (Free tier)
+- **Runtime:** Python 3 (Starter plan — always on)
 - **Region:** Oregon (US West)
 - **Root directory:** backend
 - **Build command:** `pip install -r requirements.txt && python seed.py`
 - **Start command:** `gunicorn wsgi:app`
 - **Auto-deploys** from GitHub `main` branch
-- **Note:** Free tier spins down after 15 min of inactivity. First request takes 30–50 sec to wake up.
+- **Note:** Starter plan keeps the server always on — no cold start delay.
 
 ### GitHub
 - **Repository:** https://github.com/wendymarquette68/ScholarScaffold
@@ -74,6 +74,6 @@
 ---
 
 ## Important Notes
-- **SQLite is ephemeral** on Render's free tier — data resets on every redeploy. The seed script recreates test users each time.
+- **SQLite is ephemeral** on Render — data resets on every redeploy. The seed script recreates test users each time.
 - **For persistent data**, add a PostgreSQL database (Render or Supabase) and set the `DATABASE_URL` env var.
 - **Frontend is NOT auto-deployed** from GitHub since it uses manual deploy. You must rebuild and drag-drop after code changes.

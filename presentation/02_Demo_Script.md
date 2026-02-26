@@ -8,7 +8,7 @@ Use this script to walk stakeholders through the live prototype. Estimated time:
 
 ## Before the Demo
 
-1. Open the app 2–3 minutes early to wake up the backend server (free tier sleeps after 15 min)
+1. Open the app in your browser (always-on server — no startup delay)
 2. URL: **https://dashing-torrone-78de6c.netlify.app**
 3. Have two browser tabs ready:
    - Tab 1: `student@university.edu` / `password123` (pre-completed — shows the full pipeline)

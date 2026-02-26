@@ -9,7 +9,7 @@
 **URL:** https://dashing-torrone-78de6c.netlify.app
 **Login:** student@university.edu | **Password:** password123
 
-_(First load may take 30 seconds — the demo server wakes from sleep mode.)_
+_(Always-on server — no startup delay.)_
 
 ---
 

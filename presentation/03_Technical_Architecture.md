@@ -22,7 +22,7 @@
 │                                                          │
 │   Python 3 + Flask 3.0 + SQLAlchemy ORM                  │
 │   Gunicorn WSGI Server                                   │
-│   Hosted on Render (Free Tier)                           │
+│   Hosted on Render (Starter Plan — always on)            │
 │                                                          │
 │   ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │
 │   │ Auth Routes  │  │ Data Routes  │  │ Scoring Engine│  │
