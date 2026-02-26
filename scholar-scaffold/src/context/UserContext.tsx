@@ -1,3 +1,12 @@
+/**
+ * UserContext — Central state management for authentication and pipeline progress.
+ *
+ * Manages: user session, JWT token restore, articles, review progress,
+ * pipeline stage statuses, and consent/design-literacy/search-strategy flags.
+ *
+ * On app load, attempts to restore session from JWT stored in localStorage.
+ * Access via: const { user, login, logout, ... } = useUser();
+ */
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User, Article, ReviewProgress, PipelineStage, StageStatus } from '../types';
 import { getArticles, setAuthToken, getAuthToken, getCurrentUser } from '../services/api';
@@ -53,18 +62,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setIsLoading(false));
   }, []);
 
+  // Set user state and load their articles from the backend
   const login = useCallback((userData: User) => {
     setUser(userData);
-    // Fetch articles from backend
     getArticles(userData.id).then(arts => setArticles(arts)).catch(() => setArticles([]));
   }, []);
 
+  // Clear all user state and remove JWT from localStorage
   const logout = useCallback(() => {
     setUser(null);
     setArticles([]);
     setAuthToken(null);
   }, []);
 
+  // Update local user state flags (backend calls happen in the page components)
   const updateConsentFlag = useCallback((consent: boolean) => {
     setUser(prev => prev ? { ...prev, consentFlag: consent } : null);
   }, []);
@@ -85,6 +96,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
   }, []);
 
+  // Calculate review progress — used to determine pipeline stage unlocking
   const completedReviews = articles.filter(a => a.reviewComplete);
   const reviewProgress: ReviewProgress = {
     total: completedReviews.length,
@@ -92,12 +104,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     excluded: completedReviews.filter(a => a.review?.inclusionDecision === 'exclude').length,
   };
 
+  // Pipeline gating: Article Reviews require Design Literacy; Proposal requires 10 reviews (5 include, 2 exclude)
   const isArticleReviewsUnlocked = user?.designLiteracyComplete ?? false;
   const isProposalUnlocked =
     reviewProgress.total >= 10 &&
     reviewProgress.included >= 5 &&
     reviewProgress.excluded >= 2;
 
+  // Determine the display status of each pipeline stage based on user progress
   const getStageStatus = (stageId: string): StageStatus => {
     switch (stageId) {
       case 'search-strategy':
@@ -122,6 +136,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // The 6-stage research pipeline shown in the sidebar and dashboard
   const pipelineStages: PipelineStage[] = [
     { id: 'search-strategy', name: 'Research Strategy Coach', status: getStageStatus('search-strategy'), path: '/research-strategy' },
     { id: 'design-literacy', name: 'Research Design Literacy', status: getStageStatus('design-literacy'), path: '/design-literacy' },

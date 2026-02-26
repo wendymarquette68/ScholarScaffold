@@ -1,3 +1,13 @@
+/**
+ * ToastContext — Global toast notification system.
+ *
+ * Usage: Call showToast(message, type) from any component.
+ * Types: 'success' (green), 'error' (red), 'warning' (yellow), 'info' (blue).
+ * Toasts auto-dismiss after 4 seconds and can be manually closed.
+ *
+ * Wrap your app with <ToastProvider> in main.tsx.
+ * Access via: const { showToast } = useToast();
+ */
 import { createContext, useContext, useState, useCallback } from 'react';
 import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 
@@ -19,8 +29,10 @@ export function useToast() {
   return useContext(ToastContext);
 }
 
+// Auto-incrementing ID to uniquely identify each toast notification
 let nextId = 0;
 
+// Maps each toast type to its corresponding Lucide icon component
 const iconMap = {
   success: CheckCircle,
   error: XCircle,
@@ -28,6 +40,7 @@ const iconMap = {
   info: Info,
 };
 
+// Tailwind CSS classes for each toast type's background, border, and text color
 const colorMap = {
   success: 'bg-green-50 border-green-200 text-green-800',
   error: 'bg-red-50 border-red-200 text-red-800',
@@ -42,6 +55,10 @@ const iconColorMap = {
   info: 'text-blue-500',
 };
 
+/**
+ * ToastProvider — Renders toast notifications in the bottom-right corner.
+ * Manages the toast queue: adding, auto-removing after 4s, and manual dismiss.
+ */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -58,6 +75,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
+      {/* Toast container — fixed bottom-right, stacks vertically */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
         {toasts.map(toast => {
           const Icon = iconMap[toast.type];

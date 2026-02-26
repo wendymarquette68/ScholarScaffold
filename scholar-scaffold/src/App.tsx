@@ -1,3 +1,14 @@
+/**
+ * App.tsx — Main routing and layout for ScholarScaffold.
+ *
+ * Route protection layers (applied in order):
+ *   1. ProtectedRoute — Requires authenticated user (redirects to /login)
+ *   2. ConsentGate — Requires IRB consent decision (redirects to /consent)
+ *   3. AppLayout — Wraps page content with Navbar + Sidebar
+ *
+ * The /consent route is protected but NOT consent-gated (users need to reach it).
+ * Public routes (/login, /register) have no wrappers.
+ */
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useUser } from './context/UserContext';
 import Navbar from './components/layout/Navbar';
@@ -16,6 +27,7 @@ import BibliographyPage from './pages/BibliographyPage';
 import ProposalPage from './pages/ProposalPage';
 import RubricPage from './pages/RubricPage';
 
+/** Redirects unauthenticated users to /login. Shows nothing while session is restoring. */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useUser();
   if (isLoading) return null;
@@ -23,6 +35,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/** Redirects users to /consent if they haven't made an IRB consent decision yet. */
 function ConsentGate({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   if (user && (user.consentFlag === null || user.consentFlag === undefined)) {
@@ -31,6 +44,7 @@ function ConsentGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/** Standard page layout: top Navbar + left Sidebar + main content area. */
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">

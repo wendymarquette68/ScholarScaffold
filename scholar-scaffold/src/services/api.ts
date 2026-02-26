@@ -1,8 +1,19 @@
+/**
+ * api.ts — All backend API calls for ScholarScaffold.
+ *
+ * API_BASE is set by the VITE_API_URL environment variable at build time.
+ * In production: https://scholarscaffold.onrender.com/api
+ * In development: /api (proxied by Vite to local Flask server)
+ *
+ * All authenticated requests include a Bearer JWT token in the Authorization header.
+ * Token is stored in localStorage under 'scholar_token'.
+ */
 import { Article, ArticleReview, ProposalDraft, RubricResult, ReviewProgress, SearchStrategy } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
-// Token management
+// ─── Token Management ───────────────────────────────────────────────
+// JWT token is kept in memory and synced to localStorage for session persistence.
 let authToken: string | null = null;
 
 export function setAuthToken(token: string | null) {
@@ -21,6 +32,10 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
+/**
+ * Central fetch wrapper — attaches JWT token and Content-Type header to every request.
+ * All API functions below call this instead of fetch() directly.
+ */
 async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -33,7 +48,7 @@ async function apiFetch(path: string, options: RequestInit = {}): Promise<Respon
   return fetch(`${API_BASE}${path}`, { ...options, headers });
 }
 
-// Auth
+// ─── Auth ────────────────────────────────────────────────────────────
 export async function loginUser(email: string, password: string) {
   const res = await apiFetch('/auth/login', {
     method: 'POST',
@@ -72,7 +87,7 @@ export async function saveConsentFlag(_userId: string, consent: boolean) {
   return res.json();
 }
 
-// Research Strategy
+// ─── Research Strategy ──────────────────────────────────────────────
 export async function saveSearchStrategy(_userId: string, topicData: SearchStrategy) {
   const res = await apiFetch('/strategy', {
     method: 'POST',
@@ -92,7 +107,7 @@ export async function markStrategyComplete() {
   return res.json();
 }
 
-// Design Literacy
+// ─── Design Literacy ────────────────────────────────────────────────
 export async function saveQuizResult(_userId: string, score: number, responses: Record<string, number>) {
   const res = await apiFetch('/literacy/quiz', {
     method: 'POST',
@@ -106,7 +121,7 @@ export async function getModuleCompletionStatus(_userId: string) {
   return res.json();
 }
 
-// Articles
+// ─── Articles ───────────────────────────────────────────────────────
 export async function getArticles(_userId: string): Promise<Article[]> {
   const res = await apiFetch('/articles');
   const data = await res.json();
@@ -151,7 +166,7 @@ export async function getReviewProgress(_userId: string): Promise<ReviewProgress
   return data.progress || { total: 0, included: 0, excluded: 0 };
 }
 
-// Bibliography
+// ─── Bibliography ───────────────────────────────────────────────────
 export async function getBibliography(_userId: string) {
   const res = await apiFetch('/bibliography');
   const data = await res.json();
@@ -166,7 +181,7 @@ export async function updateAnnotation(articleId: string, annotationData: Record
   return res.json();
 }
 
-// Proposal
+// ─── Proposal ───────────────────────────────────────────────────────
 export async function getProposalDrafts(_userId: string): Promise<ProposalDraft[]> {
   const res = await apiFetch('/proposal/drafts');
   if (!res.ok) return [];
@@ -194,7 +209,7 @@ export async function getProposalStatus() {
   return res.json();
 }
 
-// Rubric
+// ─── Rubric ─────────────────────────────────────────────────────────
 export async function submitForRubricScoring(_userId: string, version: number = 1) {
   const res = await apiFetch('/rubric/score', {
     method: 'POST',
@@ -215,7 +230,7 @@ export async function getDraftComparison(_userId: string) {
   return res.json();
 }
 
-// IRB Logging (only fires if consent_flag = true)
+// ─── IRB Logging (only fires if user's consent_flag = true) ────────
 export async function logResearchData(_userId: string, eventType: string, payload: Record<string, unknown>) {
   const res = await apiFetch('/irb/log', {
     method: 'POST',
