@@ -31,8 +31,9 @@ export default function LoginPage() {
           navigate('/dashboard');
         }
       } else {
-        setError(data.error || 'Invalid credentials.');
-        showToast(data.error || 'Invalid credentials.', 'error');
+        const msg = data.error || 'Invalid credentials. Please check your email and password.';
+        setError(msg);
+        showToast(msg, 'error');
       }
     } catch {
       setError('Cannot connect to server. Make sure the backend is running.');

@@ -10,9 +10,13 @@ from models.user import User
 def seed():
     app = create_app()
     with app.app_context():
-        # Clear existing data
-        db.drop_all()
+        # Create tables if they don't exist (safe for existing databases)
         db.create_all()
+
+        # Only seed if no users exist — preserves pilot tester accounts on redeploy
+        if User.query.first() is not None:
+            print('Database already has users — skipping seed to preserve data.')
+            return
 
         # Create test users
         pw_hash = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

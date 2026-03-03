@@ -47,8 +47,10 @@ def login():
         return jsonify({'success': False, 'error': 'Email and password required'}), 400
 
     user = User.query.filter_by(email=email).first()
-    if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
-        return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
+    if not user:
+        return jsonify({'success': False, 'error': 'No account found with this email. Please register first.'}), 401
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
+        return jsonify({'success': False, 'error': 'Incorrect password. Please try again.'}), 401
 
     token = generate_token(user.id)
     return jsonify({'success': True, 'token': token, 'user': user.to_dict()})
