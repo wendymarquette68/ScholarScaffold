@@ -18,7 +18,9 @@ const designStrengthExpected: Record<string, { min: number; max: number; label: 
   'Cross-Sectional Study': { min: 2, max: 3, label: 'low-moderate (snapshot, no temporal sequence)' },
   'Descriptive Study': { min: 1, max: 2, label: 'low (hypothesis-generating only)' },
   'Phenomenology': { min: 3, max: 4, label: 'strong for understanding lived experience (not ranked on quantitative hierarchies)' },
-  'Grounded Theory': { min: 3, max: 4, label: 'strong for theory development' },
+  'Grounded Theory — Classic (Glaserian)': { min: 3, max: 4, label: 'strong for data-driven theory development' },
+  'Grounded Theory — Constructivist (Charmazian)': { min: 3, max: 4, label: 'strong for contextual, interpretive theory' },
+  'Grounded Theory — Straussian/Corbinian': { min: 3, max: 4, label: 'strong for systematic theory development' },
   'Case Study': { min: 2, max: 3, label: 'moderate (rich but limited generalizability)' },
   'Ethnography': { min: 3, max: 4, label: 'strong for cultural understanding' },
 };
