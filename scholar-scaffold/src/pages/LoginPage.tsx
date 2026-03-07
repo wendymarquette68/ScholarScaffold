@@ -98,8 +98,8 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <div className="mt-6 p-3 bg-gray-50 rounded-lg text-xs text-gray-500">
-          <strong>Demo:</strong> Use <code>student@university.edu</code> (pre-completed) or <code>test@university.edu</code> (fresh start) — password: <code>password123</code>
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+          <strong>Pilot Testers:</strong> Please <Link to="/register" className="text-blue-600 font-semibold underline">register your own account</Link> so your progress is tracked individually. Using a shared account will mix your data with other testers.
         </div>
       </div>
     </div>
