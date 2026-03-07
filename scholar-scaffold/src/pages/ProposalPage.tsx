@@ -113,10 +113,19 @@ export default function ProposalPage() {
               {saving ? 'Saving...' : 'Save Draft'}
             </button>
             <button
-              onClick={() => navigate('/rubric')}
-              className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700 transition-colors"
+              onClick={async () => {
+                setSaving(true);
+                try {
+                  await apiSaveProposalDraft('', { ...draft, version: 1 });
+                  navigate('/rubric');
+                } catch {
+                  alert('Failed to save draft. Please try again.');
+                } finally { setSaving(false); }
+              }}
+              disabled={saving}
+              className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
             >
-              Submit for Rubric Evaluation
+              {saving ? 'Saving & Submitting...' : 'Submit for Rubric Evaluation'}
             </button>
           </div>
         </div>
@@ -129,7 +138,7 @@ export default function ProposalPage() {
                 onClick={() => openAnnotationModal(section.key)}
                 className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
               >
-                <BookMarked className="w-4 h-4" /> Insert from Annotation
+                <BookMarked className="w-4 h-4" /> Insert from Review Notes
               </button>
             </div>
             {section.key === 'title' ? (
@@ -158,7 +167,8 @@ export default function ProposalPage() {
       {showAnnotationModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Insert from Annotation</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Insert from Review Notes</h2>
+            <p className="text-sm text-gray-500 mb-4">Click on a finding or significance statement below to insert it into your proposal section. These are pulled from your completed article reviews.</p>
             {includedArticles.length === 0 ? (
               <p className="text-gray-500">No included articles available.</p>
             ) : (

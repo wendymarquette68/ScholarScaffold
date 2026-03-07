@@ -260,7 +260,7 @@ export default function ArticleReviewPage() {
               <Link to="/articles" className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
                 Back to Article List
               </Link>
-              <button onClick={() => setActiveSection('B')} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
+              <button onClick={() => { setActiveSection('B'); window.scrollTo(0, 0); }} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
                 Next: Evidence Evaluation
               </button>
             </div>
@@ -331,8 +331,8 @@ export default function ArticleReviewPage() {
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none" />
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setActiveSection('A')} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">Back</button>
-              <button onClick={() => setActiveSection('C')} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
+              <button onClick={() => { setActiveSection('A'); window.scrollTo(0, 0); }} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">Back</button>
+              <button onClick={() => { setActiveSection('C'); window.scrollTo(0, 0); }} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
                 Next: Inclusion Decision
               </button>
             </div>
@@ -404,7 +404,7 @@ export default function ArticleReviewPage() {
               </div>
             )}
             <div className="flex gap-2">
-              <button onClick={() => setActiveSection('B')} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">Back</button>
+              <button onClick={() => { setActiveSection('B'); window.scrollTo(0, 0); }} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">Back</button>
               <button onClick={handleSubmit} className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-green-700 transition-colors">
                 Submit Review
               </button>
