@@ -89,7 +89,7 @@ export default function AddArticlePage() {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">DOI or URL</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">DOI or URL <span className="text-gray-400 font-normal">(optional)</span></label>
           <input
             type="text"
             value={formData.doi}
@@ -99,7 +99,7 @@ export default function AddArticlePage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Abstract</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Abstract <span className="text-gray-400 font-normal">(optional — for your reference during review)</span></label>
           <textarea
             value={formData.abstract}
             onChange={e => updateField('abstract', e.target.value)}
