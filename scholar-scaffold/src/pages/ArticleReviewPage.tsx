@@ -177,6 +177,12 @@ export default function ArticleReviewPage() {
             </Link>
           )}
 
+          <button
+            onClick={() => setSubmitted(false)}
+            className="inline-block bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors"
+          >
+            Edit Review
+          </button>
           <Link to="/articles" className="inline-block text-sm text-gray-500 hover:text-gray-700 underline">
             Back to Article List
           </Link>
@@ -250,9 +256,14 @@ export default function ArticleReviewPage() {
               <textarea value={review.significance} onChange={e => updateReview('significance', e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none" />
             </div>
-            <button onClick={() => setActiveSection('B')} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
-              Next: Evidence Evaluation
-            </button>
+            <div className="flex gap-2">
+              <Link to="/articles" className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+                Back to Article List
+              </Link>
+              <button onClick={() => setActiveSection('B')} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
+                Next: Evidence Evaluation
+              </button>
+            </div>
           </div>
         )}
 
