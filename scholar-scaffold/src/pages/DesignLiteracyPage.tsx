@@ -5,6 +5,7 @@ import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { researchDesigns, analyticStrategies, quizQuestions } from '../data/mockData';
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 type TabId = 'quantitative' | 'qualitative' | 'synthesis' | 'analytic' | 'hierarchy' | 'quiz';
 
@@ -50,11 +51,16 @@ export default function DesignLiteracyPage() {
       )}
 
       {!user?.designLiteracyComplete && (
-        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <p className="text-sm text-amber-800">
-            <strong>How to complete this module:</strong> Review the research designs in each tab, then click the <strong>Quiz</strong> tab to test your knowledge. You must score at least 70% to unlock Article Reviews.
-          </p>
-        </div>
+        <GuidanceBanner
+          title="What to do here"
+          storageKey="design_literacy_guide"
+          steps={[
+            'Browse the tabs (Quantitative, Qualitative, Evidence Synthesis) to learn about different research designs.',
+            'Check the Analytic Strategies and Evidence Hierarchy tabs for additional context.',
+            'Click the Quiz tab and answer all questions. You need 70% or higher to pass.',
+            'Once you pass, Article Reviews will unlock so you can start reviewing research articles.',
+          ]}
+        />
       )}
 
       {/* Tabs */}

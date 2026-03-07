@@ -3,6 +3,7 @@ import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import PipelineStatus from '../components/common/PipelineStatus';
 import ProgressTracker from '../components/common/ProgressTracker';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 import { TrendingUp, FileText, CheckCircle, ArrowRight } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -18,6 +19,20 @@ export default function DashboardPage() {
 
   return (
     <PageWrapper title={`Welcome, ${user?.name}`} subtitle="Your research pipeline at a glance">
+      <GuidanceBanner
+        title="Welcome to ScholarScaffold!"
+        storageKey="dashboard_welcome"
+        steps={[
+          'Research Strategy Coach — Define your topic, keywords, and databases to build a search strategy.',
+          'Design Literacy Module — Learn about research designs and pass a short quiz (70% to proceed).',
+          'Article Reviews — Add 10 articles and review each one (you need 5 Include + 2 Exclude decisions).',
+          'Annotated Bibliography — Auto-generated from your included articles. Edit and refine entries.',
+          'Proposal Builder — Draft your research proposal using your reviewed evidence.',
+          'Rubric Scoring — Submit your proposal for feedback, priority fixes, and a revision roadmap.',
+        ]}
+      >
+        <p className="mt-2 font-medium">Start with Step 1 below — the blue "Next Step" card tells you exactly where to go.</p>
+      </GuidanceBanner>
       <div className="space-y-6">
         <Link to={nextStep.path} className="block bg-primary-50 border border-primary-200 rounded-xl p-5 hover:bg-primary-100 transition-colors group">
           <div className="flex items-center justify-between">

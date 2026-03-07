@@ -6,6 +6,7 @@ import SectionAlert from '../components/common/SectionAlert';
 import { researchDesigns } from '../data/mockData';
 import { ArticleReview } from '../types';
 import { Trash2, Plus, ArrowRight, CheckCircle } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 // Expected design strength ranges for coaching feedback
 const designStrengthExpected: Record<string, { min: number; max: number; label: string }> = {
@@ -184,6 +185,16 @@ export default function ArticleReviewPage() {
 
   return (
     <PageWrapper title="Article Review" subtitle={article.title}>
+      <GuidanceBanner
+        title="What to do here"
+        storageKey="article_review_guide"
+        steps={[
+          'Section A: Structured Summary — Identify the research question, study design, sample, key findings, and significance.',
+          'Section B: Evidence Evaluation — Rate design strength, assess internal/external validity, and list at least 3 limitations.',
+          'Section C: Inclusion Decision — Score relevance, evidence, and argument contribution, then decide Include or Exclude.',
+          'Click "Submit Review" when all fields are complete. Yellow coaching alerts help you improve as you go.',
+        ]}
+      />
       <div className="space-y-6">
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <p className="text-sm text-gray-600"><strong>Authors:</strong> {article.authors} ({article.year})</p>

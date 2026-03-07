@@ -4,6 +4,7 @@ import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { Copy, Check, Search, ArrowRight } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 const suggestedDatabases = [
   { name: 'PubMed', description: 'Biomedical and life sciences literature' },
@@ -86,6 +87,16 @@ export default function ResearchStrategyPage() {
 
   return (
     <PageWrapper title="Research Strategy Coach" subtitle="Build an effective database search strategy">
+      <GuidanceBanner
+        title="What to do here"
+        storageKey="research_strategy_guide"
+        steps={[
+          'Define your research topic and target population.',
+          'Build a list of keywords and select Boolean operators (AND, OR, NOT).',
+          'Choose which databases you plan to search (PubMed, CINAHL, etc.).',
+          'Review your generated search string, copy it, and mark this stage complete.',
+        ]}
+      />
       <div className="space-y-6">
         {/* Step Indicators */}
         <div className="flex items-center gap-2">

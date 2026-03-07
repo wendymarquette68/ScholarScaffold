@@ -6,6 +6,7 @@ import LockedStage from '../components/common/LockedStage';
 import { submitForRubricScoring, getRubricResults } from '../services/api';
 import { RubricResult, RubricDimension } from '../types';
 import { AlertTriangle, ArrowLeft, Loader2 } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 const dimensionLabels: Record<string, string> = {
   thesisClarity: 'Thesis Clarity',
@@ -81,6 +82,16 @@ export default function RubricPage() {
   if (!result) {
     return (
       <PageWrapper title="Rubric Scoring & Revision" subtitle="Evaluate and improve your proposal">
+        <GuidanceBanner
+          title="What to do here"
+          storageKey="rubric_guide"
+          steps={[
+            'Click "Score My Proposal" to submit your draft for automated evaluation.',
+            'Review your scores across 7 dimensions (Thesis Clarity, Evidence Integration, etc.).',
+            'Read the Top 3 Priority Fixes to know exactly what to improve first.',
+            'Follow the Revision Roadmap, then return to the Proposal Builder to revise and resubmit.',
+          ]}
+        />
         <div className="text-center py-12 bg-white border border-gray-200 rounded-xl space-y-4">
           <p className="text-gray-500">No rubric evaluation yet. Submit your proposal for scoring.</p>
           {error && <p className="text-red-600 text-sm">{error}</p>}

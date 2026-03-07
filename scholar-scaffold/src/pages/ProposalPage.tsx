@@ -7,6 +7,7 @@ import SectionAlert from '../components/common/SectionAlert';
 import { saveProposalDraft as apiSaveProposalDraft } from '../services/api';
 import { ProposalDraft } from '../types';
 import { History, BookMarked } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 const proposalSections = [
   { key: 'title' as const, label: 'Title' },
@@ -76,6 +77,17 @@ export default function ProposalPage() {
 
   return (
     <PageWrapper title="Proposal Builder" subtitle="Build your research proposal">
+      <GuidanceBanner
+        title="What to do here"
+        storageKey="proposal_guide"
+        steps={[
+          'Write each section of your research proposal in the text boxes below.',
+          'Click "Insert from Annotation" on any section to pull in key findings or significance from your reviewed articles.',
+          'Click "Save Draft" regularly to preserve your work.',
+          'Yellow coaching prompts below each section help you think critically about your writing.',
+          'When ready, click "Submit for Rubric Evaluation" to get scored feedback and a revision roadmap.',
+        ]}
+      />
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

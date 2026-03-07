@@ -4,6 +4,7 @@ import PageWrapper from '../components/layout/PageWrapper';
 import ProgressTracker from '../components/common/ProgressTracker';
 import LockedStage from '../components/common/LockedStage';
 import { Plus, FileText } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 export default function ArticleListPage() {
   const { articles, isArticleReviewsUnlocked } = useUser();
@@ -21,6 +22,16 @@ export default function ArticleListPage() {
 
   return (
     <PageWrapper title="Article Reviews" subtitle="Review 10 articles to unlock the Proposal Builder">
+      <GuidanceBanner
+        title="What to do here"
+        storageKey="article_list_guide"
+        steps={[
+          'Click "Add New Article" to enter an article\'s details (title, authors, journal, year, DOI).',
+          'Click on any article to open its review form with 3 sections: Summary, Evidence Evaluation, and Inclusion Decision.',
+          'Complete all 3 sections and submit. You need 10 total reviews with at least 5 Include and 2 Exclude decisions.',
+          'Once you meet the requirements, the Proposal Builder will unlock automatically.',
+        ]}
+      />
       <div className="space-y-6">
         <ProgressTracker />
         <div className="flex justify-end">

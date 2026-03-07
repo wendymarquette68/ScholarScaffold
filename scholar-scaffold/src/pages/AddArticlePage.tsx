@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 export default function AddArticlePage() {
   const { user, addArticle } = useUser();
@@ -33,6 +34,16 @@ export default function AddArticlePage() {
 
   return (
     <PageWrapper title="Add New Article" subtitle="Enter article metadata to begin your review">
+      <GuidanceBanner
+        title="What to do here"
+        storageKey="add_article_guide"
+        steps={[
+          'Enter the article details from the published paper: title, authors (in APA format), year, and journal.',
+          'Add the DOI or URL if available — this is optional but helpful for your bibliography.',
+          'Optionally paste the abstract to have it available during your review.',
+          'Click "Save & Begin Review" to proceed to the 3-part structured review.',
+        ]}
+      />
       <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4 max-w-2xl">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Article Title *</label>

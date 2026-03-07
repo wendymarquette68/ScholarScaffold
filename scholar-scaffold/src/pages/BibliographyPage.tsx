@@ -3,6 +3,7 @@ import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { Edit2, Save, AlertTriangle } from 'lucide-react';
+import GuidanceBanner from '../components/common/GuidanceBanner';
 
 const narrativeCite = (authors: string, year: number): string => {
   // Parse APA author strings like "Chen, L., Martinez, R., & Thompson, K."
@@ -52,6 +53,16 @@ export default function BibliographyPage() {
 
   return (
     <PageWrapper title="Annotated Bibliography" subtitle="Generated from your included articles">
+      <GuidanceBanner
+        title="What to do here"
+        storageKey="bibliography_guide"
+        steps={[
+          'Your bibliography is auto-generated from articles you marked "Include" during reviews.',
+          'Each entry shows an APA citation, a summary, critical evaluation, and relevance statement.',
+          'Click "Edit" on any entry to refine the text — the auto-generated text is a starting point.',
+          'Watch for orange warnings on sections that are too short and need more detail.',
+        ]}
+      />
       {includedArticles.length === 0 ? (
         <div className="text-center py-12 bg-white border border-gray-200 rounded-xl">
           <p className="text-gray-500">No articles marked "Include" yet. Complete article reviews to generate your bibliography.</p>
