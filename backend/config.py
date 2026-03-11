@@ -14,6 +14,12 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_SORT_KEYS = False
 
+    # Pilot mode: reduced article review thresholds (2 total, 1 include, 1 exclude)
+    PILOT_MODE = os.getenv('PILOT_MODE', 'false').lower() == 'true'
+    REVIEW_TOTAL_REQUIRED = 2 if PILOT_MODE else 10
+    REVIEW_INCLUDE_REQUIRED = 1 if PILOT_MODE else 5
+    REVIEW_EXCLUDE_REQUIRED = 1 if PILOT_MODE else 2
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

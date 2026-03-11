@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { BookOpen, LogOut } from 'lucide-react';
+import { REVIEW_THRESHOLDS } from '../../config/pilotConfig';
 
 export default function Navbar() {
   const { user, logout, isAuthenticated, reviewProgress } = useUser();
@@ -21,7 +22,7 @@ export default function Navbar() {
       </Link>
       <div className="flex items-center gap-6">
         <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full font-medium">
-          {reviewProgress.total} of 10 Reviews
+          {reviewProgress.total} of {REVIEW_THRESHOLDS.totalRequired} Reviews
         </div>
         <span className="text-sm text-gray-600">
           {user?.name}

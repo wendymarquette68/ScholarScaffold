@@ -9,6 +9,7 @@
  */
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User, Article, ReviewProgress, PipelineStage, StageStatus } from '../types';
+import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
 import { getArticles, setAuthToken, getAuthToken, getCurrentUser } from '../services/api';
 
 interface UserContextType {
@@ -107,9 +108,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   // Pipeline gating: Article Reviews require Design Literacy; Proposal requires 10 reviews (5 include, 2 exclude)
   const isArticleReviewsUnlocked = user?.designLiteracyComplete ?? false;
   const isProposalUnlocked =
-    reviewProgress.total >= 10 &&
-    reviewProgress.included >= 5 &&
-    reviewProgress.excluded >= 2;
+    reviewProgress.total >= REVIEW_THRESHOLDS.totalRequired &&
+    reviewProgress.included >= REVIEW_THRESHOLDS.includeRequired &&
+    reviewProgress.excluded >= REVIEW_THRESHOLDS.excludeRequired;
 
   // Determine the display status of each pipeline stage based on user progress
   const getStageStatus = (stageId: string): StageStatus => {
@@ -120,7 +121,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         return user?.designLiteracyComplete ? 'complete' : 'not_started';
       case 'article-reviews':
         if (!isArticleReviewsUnlocked) return 'locked';
-        if (reviewProgress.total >= 10) return 'complete';
+        if (reviewProgress.total >= REVIEW_THRESHOLDS.totalRequired) return 'complete';
         if (reviewProgress.total > 0) return 'in_progress';
         return 'not_started';
       case 'bibliography':
@@ -140,10 +141,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const pipelineStages: PipelineStage[] = [
     { id: 'search-strategy', name: 'Research Strategy Coach', status: getStageStatus('search-strategy'), path: '/research-strategy' },
     { id: 'design-literacy', name: 'Research Design Literacy', status: getStageStatus('design-literacy'), path: '/design-literacy' },
-    { id: 'article-reviews', name: `Article Reviews (${reviewProgress.total} of 10)`, status: getStageStatus('article-reviews'), path: '/articles', unlockRequirement: 'Complete Research Design Literacy Module' },
+    { id: 'article-reviews', name: `Article Reviews (${reviewProgress.total} of ${REVIEW_THRESHOLDS.totalRequired})`, status: getStageStatus('article-reviews'), path: '/articles', unlockRequirement: 'Complete Research Design Literacy Module' },
     { id: 'bibliography', name: 'Annotated Bibliography', status: getStageStatus('bibliography'), path: '/bibliography', unlockRequirement: 'Complete Research Design Literacy Module' },
-    { id: 'proposal', name: 'Proposal Builder', status: getStageStatus('proposal'), path: '/proposal', unlockRequirement: '10 reviews (min 5 Include, 2 Exclude)' },
-    { id: 'rubric', name: 'Rubric Scoring & Revision', status: getStageStatus('rubric'), path: '/rubric', unlockRequirement: '10 reviews (min 5 Include, 2 Exclude)' },
+    { id: 'proposal', name: 'Proposal Builder', status: getStageStatus('proposal'), path: '/proposal', unlockRequirement: `${REVIEW_THRESHOLDS.totalRequired} reviews (min ${REVIEW_THRESHOLDS.includeRequired} Include, ${REVIEW_THRESHOLDS.excludeRequired} Exclude)` },
+    { id: 'rubric', name: 'Rubric Scoring & Revision', status: getStageStatus('rubric'), path: '/rubric', unlockRequirement: `${REVIEW_THRESHOLDS.totalRequired} reviews (min ${REVIEW_THRESHOLDS.includeRequired} Include, ${REVIEW_THRESHOLDS.excludeRequired} Exclude)` },
   ];
 
   return (

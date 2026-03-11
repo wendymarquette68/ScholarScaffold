@@ -7,6 +7,7 @@ import { researchDesigns } from '../data/mockData';
 import { ArticleReview } from '../types';
 import { Trash2, Plus, ArrowRight, CheckCircle } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
+import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
 
 // Expected design strength ranges for coaching feedback
 const designStrengthExpected: Record<string, { min: number; max: number; label: string }> = {
@@ -23,6 +24,8 @@ const designStrengthExpected: Record<string, { min: number; max: number; label: 
   'Grounded Theory — Straussian/Corbinian': { min: 3, max: 4, label: 'strong for systematic theory development' },
   'Case Study': { min: 2, max: 3, label: 'moderate (rich but limited generalizability)' },
   'Ethnography': { min: 3, max: 4, label: 'strong for cultural understanding' },
+  'Quasi-Experimental': { min: 3, max: 4, label: 'moderate-high (approximates RCT but lacks random assignment)' },
+  'Mixed Methods': { min: 3, max: 5, label: 'varies (depends on rigor of both components and integration)' },
 };
 
 const vagueLimitationTerms = ['small sample', 'bias', 'limited', 'more research'];
@@ -137,7 +140,7 @@ export default function ArticleReviewPage() {
     const totalReviews = articles.filter(a => a.reviewComplete).length;
     const includedCount = articles.filter(a => a.reviewComplete && a.review?.inclusionDecision === 'include').length;
     const excludedCount = articles.filter(a => a.reviewComplete && a.review?.inclusionDecision === 'exclude').length;
-    const proposalReady = totalReviews >= 10 && includedCount >= 5 && excludedCount >= 2;
+    const proposalReady = totalReviews >= REVIEW_THRESHOLDS.totalRequired && includedCount >= REVIEW_THRESHOLDS.includeRequired && excludedCount >= REVIEW_THRESHOLDS.excludeRequired;
 
     return (
       <PageWrapper title="Review Submitted" subtitle={article.title}>
@@ -148,9 +151,9 @@ export default function ArticleReviewPage() {
             You marked this article as <strong className={review.inclusionDecision === 'include' ? 'text-green-600' : 'text-orange-600'}>{review.inclusionDecision}</strong>.
           </p>
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700 space-y-1">
-            <p><strong>{totalReviews}</strong> of 10 reviews completed</p>
-            <p><strong>{includedCount}</strong> of 5 minimum includes</p>
-            <p><strong>{excludedCount}</strong> of 2 minimum excludes</p>
+            <p><strong>{totalReviews}</strong> of {REVIEW_THRESHOLDS.totalRequired} reviews completed</p>
+            <p><strong>{includedCount}</strong> of {REVIEW_THRESHOLDS.includeRequired} minimum includes</p>
+            <p><strong>{excludedCount}</strong> of {REVIEW_THRESHOLDS.excludeRequired} minimum excludes</p>
           </div>
 
           {proposalReady ? (
@@ -168,9 +171,9 @@ export default function ArticleReviewPage() {
                 <div className="text-xs font-semibold text-primary-500 uppercase tracking-wide">Next Step</div>
                 <div className="text-sm font-bold text-primary-800 mt-0.5">Add Another Article</div>
                 <div className="text-xs text-primary-600 mt-0.5">
-                  {totalReviews < 10
-                    ? `${10 - totalReviews} more reviews needed to unlock the Proposal Builder.`
-                    : `Need ${Math.max(0, 5 - includedCount)} more includes and ${Math.max(0, 2 - excludedCount)} more excludes.`}
+                  {totalReviews < REVIEW_THRESHOLDS.totalRequired
+                    ? `${REVIEW_THRESHOLDS.totalRequired - totalReviews} more reviews needed to unlock the Proposal Builder.`
+                    : `Need ${Math.max(0, REVIEW_THRESHOLDS.includeRequired - includedCount)} more includes and ${Math.max(0, REVIEW_THRESHOLDS.excludeRequired - excludedCount)} more excludes.`}
                 </div>
               </div>
               <ArrowRight className="w-5 h-5 text-primary-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />

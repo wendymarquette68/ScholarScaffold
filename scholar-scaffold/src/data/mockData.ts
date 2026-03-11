@@ -271,6 +271,20 @@ export const researchDesigns: ResearchDesign[] = [
     evidenceStrength: 'Provides cultural and contextual understanding — not ranked on quantitative hierarchies.',
   },
   {
+    name: 'Quasi-Experimental',
+    category: 'quantitative',
+    description: 'A study that tests the effect of an intervention but lacks random assignment. Uses pre-existing groups, matching, or statistical controls to approximate experimental conditions.',
+    whenUsed: 'When random assignment is not feasible due to ethical, practical, or logistical constraints, but the researcher still wants to estimate causal effects.',
+    evidenceStrength: 'Moderate-High — stronger than observational designs but weaker than RCTs due to potential selection bias.',
+  },
+  {
+    name: 'Mixed Methods',
+    category: 'quantitative',
+    description: 'Combines quantitative and qualitative methods in a single study to provide a more complete understanding. Common designs include convergent parallel, explanatory sequential, and exploratory sequential.',
+    whenUsed: 'When neither quantitative nor qualitative methods alone can fully address the research question, and integration of both provides richer insight.',
+    evidenceStrength: 'Varies by design — strength depends on the rigor of both the quantitative and qualitative components and how well they are integrated.',
+  },
+  {
     name: 'Systematic Review',
     category: 'synthesis',
     description: 'A comprehensive, structured review of all available evidence on a specific question using predefined search and evaluation criteria.',

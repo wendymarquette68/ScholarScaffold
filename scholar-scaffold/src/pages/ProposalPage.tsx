@@ -8,6 +8,7 @@ import { saveProposalDraft as apiSaveProposalDraft } from '../services/api';
 import { ProposalDraft } from '../types';
 import { History, BookMarked } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
+import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
 
 const proposalSections = [
   { key: 'title' as const, label: 'Title' },
@@ -45,14 +46,14 @@ export default function ProposalPage() {
         <LockedStage
           title="Proposal Builder"
           requirements={[
-            '10 article reviews completed',
-            'Minimum 5 articles marked Include',
-            'Minimum 2 articles marked Exclude',
+            `${REVIEW_THRESHOLDS.totalRequired} article reviews completed`,
+            `Minimum ${REVIEW_THRESHOLDS.includeRequired} articles marked Include`,
+            `Minimum ${REVIEW_THRESHOLDS.excludeRequired} articles marked Exclude`,
           ]}
           currentProgress={{
-            '10 article reviews completed': { current: reviewProgress.total, required: 10 },
-            'Minimum 5 articles marked Include': { current: reviewProgress.included, required: 5 },
-            'Minimum 2 articles marked Exclude': { current: reviewProgress.excluded, required: 2 },
+            [`${REVIEW_THRESHOLDS.totalRequired} article reviews completed`]: { current: reviewProgress.total, required: REVIEW_THRESHOLDS.totalRequired },
+            [`Minimum ${REVIEW_THRESHOLDS.includeRequired} articles marked Include`]: { current: reviewProgress.included, required: REVIEW_THRESHOLDS.includeRequired },
+            [`Minimum ${REVIEW_THRESHOLDS.excludeRequired} articles marked Exclude`]: { current: reviewProgress.excluded, required: REVIEW_THRESHOLDS.excludeRequired },
           }}
         />
       </PageWrapper>

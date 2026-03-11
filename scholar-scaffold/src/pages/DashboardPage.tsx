@@ -5,6 +5,7 @@ import PipelineStatus from '../components/common/PipelineStatus';
 import ProgressTracker from '../components/common/ProgressTracker';
 import GuidanceBanner from '../components/common/GuidanceBanner';
 import { TrendingUp, FileText, CheckCircle, ArrowRight } from 'lucide-react';
+import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
 
 export default function DashboardPage() {
   const { user, reviewProgress } = useUser();
@@ -12,8 +13,8 @@ export default function DashboardPage() {
   const nextStep = (() => {
     if (!user?.searchStrategyComplete) return { label: 'Research Strategy Coach', path: '/research-strategy', hint: 'Define your research topic, keywords, and databases.' };
     if (!user?.designLiteracyComplete) return { label: 'Research Design Literacy', path: '/design-literacy', hint: 'Learn about research designs and pass the quiz to unlock Article Reviews.' };
-    if (reviewProgress.total < 10) return { label: 'Article Reviews', path: '/articles', hint: `You have ${reviewProgress.total} of 10 reviews. Add and review more articles.` };
-    if (reviewProgress.included < 5 || reviewProgress.excluded < 2) return { label: 'Article Reviews', path: '/articles', hint: `Need ${Math.max(0, 5 - reviewProgress.included)} more Include and ${Math.max(0, 2 - reviewProgress.excluded)} more Exclude to unlock Proposal.` };
+    if (reviewProgress.total < REVIEW_THRESHOLDS.totalRequired) return { label: 'Article Reviews', path: '/articles', hint: `You have ${reviewProgress.total} of ${REVIEW_THRESHOLDS.totalRequired} reviews. Add and review more articles.` };
+    if (reviewProgress.included < REVIEW_THRESHOLDS.includeRequired || reviewProgress.excluded < REVIEW_THRESHOLDS.excludeRequired) return { label: 'Article Reviews', path: '/articles', hint: `Need ${Math.max(0, REVIEW_THRESHOLDS.includeRequired - reviewProgress.included)} more Include and ${Math.max(0, REVIEW_THRESHOLDS.excludeRequired - reviewProgress.excluded)} more Exclude to unlock Proposal.` };
     return { label: 'Proposal Builder', path: '/proposal', hint: 'All prerequisites met! Start building your research proposal.' };
   })();
 
@@ -25,7 +26,7 @@ export default function DashboardPage() {
         steps={[
           'Research Strategy Coach — Define your topic, keywords, and databases to build a search strategy.',
           'Design Literacy Module — Learn about research designs and pass a short quiz (70% to proceed).',
-          'Article Reviews — Add 10 articles and review each one (you need 5 Include + 2 Exclude decisions).',
+          `Article Reviews — Add ${REVIEW_THRESHOLDS.totalRequired} articles and review each one (you need ${REVIEW_THRESHOLDS.includeRequired} Include + ${REVIEW_THRESHOLDS.excludeRequired} Exclude decisions).`,
           'Annotated Bibliography — Auto-generated from your included articles. Edit and refine entries.',
           'Proposal Builder — Draft your research proposal using your reviewed evidence.',
           'Rubric Scoring — Submit your proposal for feedback, priority fixes, and a revision roadmap.',
