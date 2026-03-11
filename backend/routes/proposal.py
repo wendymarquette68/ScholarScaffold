@@ -1,9 +1,15 @@
+import os
 import uuid
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from models import db
 from models.article import Article
 from models.proposal_draft import ProposalDraft
 from routes.auth import get_current_user
+
+_pilot = os.getenv('PILOT_MODE', 'false').lower() == 'true'
+_TOTAL_REQUIRED = 2 if _pilot else 10
+_INCLUDE_REQUIRED = 1 if _pilot else 5
+_EXCLUDE_REQUIRED = 1 if _pilot else 2
 
 proposal_bp = Blueprint('proposal', __name__)
 
@@ -15,9 +21,9 @@ def check_proposal_unlock(user) -> dict:
     included = sum(1 for a in articles if a.review and a.review.inclusion_decision == 'include')
     excluded = sum(1 for a in articles if a.review and a.review.inclusion_decision == 'exclude')
 
-    unlocked = (total >= current_app.config['REVIEW_TOTAL_REQUIRED'] and
-                included >= current_app.config['REVIEW_INCLUDE_REQUIRED'] and
-                excluded >= current_app.config['REVIEW_EXCLUDE_REQUIRED'])
+    unlocked = (total >= _TOTAL_REQUIRED and
+                included >= _INCLUDE_REQUIRED and
+                excluded >= _EXCLUDE_REQUIRED)
     return {
         'unlocked': unlocked,
         'progress': {'total': total, 'included': included, 'excluded': excluded},
