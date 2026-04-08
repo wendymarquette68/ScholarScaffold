@@ -4,7 +4,7 @@ import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import LockedStage from '../components/common/LockedStage';
 import SectionAlert from '../components/common/SectionAlert';
-import { saveProposalDraft as apiSaveProposalDraft, getProposalVersion, getSearchStrategy } from '../services/api';
+import { saveProposalDraft as apiSaveProposalDraft, getProposalVersion, getSearchStrategy, logResearchData } from '../services/api';
 import { ProposalDraft } from '../types';
 import { History, BookMarked, Save } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
@@ -141,6 +141,8 @@ export default function ProposalPage() {
   useEffect(() => {
     if (!isProposalUnlocked) { setLoadingDraft(false); return; }
 
+    logResearchData('', 'stage_enter', { stage: 'proposal_builder' });
+
     const loadData = async () => {
       try {
         const [existingDraft, strategy] = await Promise.all([
@@ -204,6 +206,7 @@ export default function ProposalPage() {
       await apiSaveProposalDraft('', { ...draft, version });
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000);
+      logResearchData('', 'proposal_draft_saved', { version });
     } catch {
       setSaveStatus('error');
     } finally {
@@ -213,6 +216,7 @@ export default function ProposalPage() {
 
   const submitForRubric = async () => {
     await saveDraft(currentVersion);
+    logResearchData('', 'rubric_submitted', { version: currentVersion });
     navigate('/rubric');
   };
 

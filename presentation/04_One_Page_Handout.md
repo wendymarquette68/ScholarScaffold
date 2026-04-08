@@ -9,7 +9,7 @@
 **URL:** https://dashing-torrone-78de6c.netlify.app
 **Login:** student@university.edu | **Password:** password123
 
-_(Always-on server — no startup delay.)_
+_Note: First sign-in may take up to 30 seconds while the server starts. Subsequent actions are fast._
 
 ---
 
@@ -17,11 +17,11 @@ _(Always-on server — no startup delay.)_
 
 ScholarScaffold guides students through a structured **6-stage research pipeline** — the same process an experienced mentor would teach, enforced by software:
 
-1. **Research Strategy Coach** — Build systematic database search strings (PubMed, CINAHL)
+1. **Research Strategy Coach** — Formulate a research question (PICO/PEO frameworks), then build systematic database search strings (PubMed, CINAHL)
 2. **Design Literacy Module** — Learn and identify research designs before reviewing articles (quiz required)
 3. **Article Reviews (10 required)** — Structured summary, evidence evaluation, inclusion/exclusion decision with justification (min 5 include, 2 exclude)
 4. **Annotated Bibliography** — Auto-generated from included articles in APA format
-5. **Proposal Builder** — Section-based editor with scope guardrails (unlocks after 10 reviews)
+5. **Proposal Builder** — 9-section editor including Theoretical/Conceptual Framework and Proposed Methodology (R1-level outputs); unlocks after 10 reviews
 6. **Rubric Scoring Engine** — Scores proposals across 7 dimensions, generates feedback and revision roadmap
 
 **Each stage must be completed before the next unlocks.** No skipping ahead.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
@@ -6,7 +6,7 @@ import SectionAlert from '../components/common/SectionAlert';
 import { researchDesigns, analyticStrategies, quizQuestions } from '../data/mockData';
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
-import { saveQuizResult } from '../services/api';
+import { saveQuizResult, logResearchData } from '../services/api';
 
 type TabId = 'quantitative' | 'qualitative' | 'synthesis' | 'analytic' | 'hierarchy' | 'quiz';
 
@@ -18,6 +18,10 @@ export default function DesignLiteracyPage() {
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [savingQuiz, setSavingQuiz] = useState(false);
   const [quizSaveError, setQuizSaveError] = useState('');
+
+  useEffect(() => {
+    logResearchData('', 'stage_enter', { stage: 'design_literacy' });
+  }, []);
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'quantitative', label: 'Quantitative' },
@@ -47,6 +51,7 @@ export default function DesignLiteracyPage() {
       setQuizSubmitted(true);
       if (quizPassed) {
         completeDesignLiteracy();
+        logResearchData('', 'design_literacy_complete', { score: quizScore, percentage: quizPercentage });
       }
     } catch {
       setQuizSaveError('Failed to save quiz. Please check your connection and try again.');

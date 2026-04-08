@@ -8,8 +8,9 @@ Use this script to walk stakeholders through the live prototype. Estimated time:
 
 ## Before the Demo
 
-1. Open the app in your browser (always-on server — no startup delay)
+1. Open the app in your browser
 2. URL: **https://dashing-torrone-78de6c.netlify.app**
+   - _First sign-in may take up to 30 seconds while the server starts — this is normal_
 3. Have two browser tabs ready:
    - Tab 1: `student@university.edu` / `password123` (pre-completed — shows the full pipeline)
    - Tab 2: `test@university.edu` / `password123` (fresh start — shows the onboarding flow)
@@ -44,12 +45,13 @@ Use this script to walk stakeholders through the live prototype. Estimated time:
 **Click "Research Strategy" in sidebar**
 
 **Show:**
+- Research question formulation step with PICO/PEO/general framework templates
 - Keyword builder interface
 - Boolean operator selection
 - Search string generation
 
 **Say:**
-> "Students start by building a proper database search strategy. The system helps them construct Boolean search strings they can copy directly into PubMed or CINAHL. This teaches them how to search systematically instead of Googling random terms."
+> "Students start by formulating a structured research question using PICO or PEO frameworks — the same frameworks used in systematic reviews and grant applications. The system then helps them build Boolean search strings they can copy directly into PubMed or CINAHL. This teaches them how to search systematically instead of Googling random terms."
 
 ---
 
@@ -100,11 +102,14 @@ Use this script to walk stakeholders through the live prototype. Estimated time:
 **Click "Proposal Builder" in sidebar**
 
 **Show:**
-- Section-based editor (Title, Background, Problem Statement, etc.)
-- Version history
+- 9-section editor (Title, Background, Problem Statement, Research Questions & Hypotheses, Theoretical/Conceptual Framework, Literature Synthesis, Proposed Methodology, Significance, Limitations & Future Directions)
+- R1-level sections highlighted with badge
+- Per-section coaching prompts
+- "Insert from Review Notes" for pulling in annotated content
+- Version history and save status
 
 **Say:**
-> "The Proposal Builder only unlocks after 10 reviews are complete with proper distribution. This enforces the correct workflow — research first, write second. Students build their proposal section by section with scope guardrails."
+> "The Proposal Builder only unlocks after 10 reviews are complete. Students build their proposal section by section with per-section coaching. Two sections — Theoretical/Conceptual Framework and Proposed Methodology — are flagged as R1-level outputs. This intentionally grooms students for graduate-level and faculty-level scholarly work, not just undergraduate completion."
 
 ---
 

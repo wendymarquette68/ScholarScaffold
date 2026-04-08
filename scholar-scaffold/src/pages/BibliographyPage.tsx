@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { Edit2, Save, AlertTriangle } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
-import { updateAnnotation } from '../services/api';
+import { updateAnnotation, logResearchData } from '../services/api';
 
 const narrativeCite = (authors: string, year: number): string => {
   // Parse APA author strings like "Chen, L., Martinez, R., & Thompson, K."
@@ -37,6 +37,10 @@ const narrativeCite = (authors: string, year: number): string => {
 
 export default function BibliographyPage() {
   const { articles } = useUser();
+  useEffect(() => {
+    logResearchData('', 'stage_enter', { stage: 'bibliography' });
+  }, []);
+
   const includedArticles = articles.filter(a => a.reviewComplete && a.review?.inclusionDecision === 'include');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState({ summary: '', evaluation: '', relevance: '' });

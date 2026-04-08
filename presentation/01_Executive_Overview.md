@@ -47,7 +47,7 @@ Each stage **must be completed before the next unlocks**, ensuring students buil
 ## The Pipeline (6 Stages)
 
 ### Stage 1: Research Strategy Coach
-Students build database search strategies with keyword builders, Boolean operators, and filter recommendations. The system generates copy-ready search strings for PubMed, CINAHL, and other health sciences databases.
+Students first formulate a structured research question using PICO, PEO, or general research frameworks, with real-time coaching on population specificity and question clarity. They then build database search strategies with keyword builders, Boolean operators, and filter recommendations. The system generates copy-ready search strings for PubMed, CINAHL, and other health sciences databases.
 
 ### Stage 2: Research Design Literacy Module
 Before reviewing any articles, students must demonstrate understanding of:
@@ -71,7 +71,14 @@ Distribution requirement: minimum 5 included, minimum 2 excluded.
 Auto-generated from included articles with APA formatting, summary, critical evaluation, and relevance paragraphs.
 
 ### Stage 5: Proposal Builder
-Unlocks only after 10 reviews with proper distribution. Sections include: Title, Background, Problem Statement, Purpose/Research Question, Literature Synthesis, Significance, and Preliminary Questions. Features insert-from-annotation, scope guardrails, and version history.
+Unlocks only after 10 reviews with proper distribution. Includes 9 sections:
+- Title, Background, Problem Statement, Research Questions & Hypotheses
+- **Theoretical/Conceptual Framework** *(R1-level)*
+- Literature Synthesis
+- **Proposed Methodology** *(R1-level)*
+- Significance & Expected Contributions, Limitations & Future Directions
+
+Features per-section coaching prompts, insert-from-annotation, live word count, and version history. R1-level sections intentionally groom students and emerging faculty for graduate and grant-writing expectations.
 
 ### Stage 6: Rubric Scoring & Revision Engine
 Evaluates proposals across 7 dimensions (1–4 scale):
@@ -124,6 +131,8 @@ This is measurable, objective, and directly tied to learning outcomes.
 ## Try It Now
 
 **Live URL:** https://dashing-torrone-78de6c.netlify.app
+
+_Note: First sign-in may take up to 30 seconds while the server starts. Subsequent actions are fast._
 
 | Login | Password | Experience |
 |-------|----------|------------|

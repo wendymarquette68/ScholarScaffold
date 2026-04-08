@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { Copy, Check, Search, ArrowRight } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
-import { saveSearchStrategy, markStrategyComplete } from '../services/api';
+import { saveSearchStrategy, markStrategyComplete, logResearchData } from '../services/api';
 
 const suggestedDatabases = [
   { name: 'PubMed', description: 'Biomedical and life sciences literature' },
@@ -92,12 +92,17 @@ export default function ResearchStrategyPage() {
       await saveSearchStrategy('', { topic, population, researchQuestion, keywords, operators, filters: selectedFilters, searchString });
       await markStrategyComplete();
       completeSearchStrategy();
+      logResearchData('', 'search_strategy_complete', { topic, keywordCount: keywords.length, researchQuestionLength: researchQuestion.length });
     } catch {
       setSaveError('Failed to save. Please check your connection and try again.');
     } finally {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    logResearchData('', 'stage_enter', { stage: 'research_strategy' });
+  }, []);
 
   const rqHasPopulation = researchQuestion.toLowerCase().includes(population.toLowerCase().split(' ')[0]) || population.length === 0;
   const rqHasQuestion = researchQuestion.includes('?');

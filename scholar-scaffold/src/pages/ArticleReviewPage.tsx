@@ -8,7 +8,7 @@ import { ArticleReview } from '../types';
 import { Trash2, Plus, ArrowRight, CheckCircle, Pencil } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
 import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
-import { saveArticleReview } from '../services/api';
+import { saveArticleReview, logResearchData } from '../services/api';
 
 // Expected design strength ranges for coaching feedback
 const designStrengthExpected: Record<string, { min: number; max: number; label: string }> = {
@@ -48,6 +48,10 @@ export default function ArticleReviewPage() {
   const [activeSection, setActiveSection] = useState<'A' | 'B' | 'C'>('A');
   const [review, setReview] = useState<ArticleReview>(article?.review || emptyReview);
   const [errors, setErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    logResearchData('', 'stage_enter', { stage: 'article_review', articleId: id });
+  }, [id]);
 
   useEffect(() => {
     if (article?.review) setReview(article.review);
@@ -116,6 +120,14 @@ export default function ArticleReviewPage() {
       const updatedArticle = { ...article, review, reviewComplete: true };
       updateArticle(updatedArticle);
       setSubmitted(true);
+      logResearchData('', 'article_review_complete', {
+        articleId: article.id,
+        inclusionDecision: review.inclusionDecision,
+        relevanceScore: review.relevanceScore,
+        evidenceStrengthScore: review.evidenceStrengthScore,
+        argumentContributionScore: review.argumentContributionScore,
+        designStrengthRating: review.designStrengthRating,
+      });
     } catch {
       setSubmitError('Failed to save review. Please check your connection and try again.');
     } finally {
