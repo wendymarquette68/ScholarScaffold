@@ -12,6 +12,16 @@ ScholarScaffold is a research literacy and proposal development app for health p
 
 ---
 
+## Changelog — STANDING INSTRUCTION
+
+After completing any set of changes in a session, update `CHANGELOG.md` with a new version entry. Include:
+- Version number (increment patch for fixes, minor for features)
+- Date
+- What changed and why
+- Files affected
+
+---
+
 ## IRB Research Data Export — STANDING INSTRUCTION
 
 When Wendy says any of the following:

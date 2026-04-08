@@ -36,13 +36,13 @@
 ### Backend — Render
 - **Dashboard:** https://dashboard.render.com
 - **Service name:** ScholarScaffold
-- **Runtime:** Python 3 (Starter plan — always on)
+- **Runtime:** Python 3 (Free tier — cold start ~30s on first request)
 - **Region:** Oregon (US West)
 - **Root directory:** backend
-- **Build command:** `pip install -r requirements.txt && python seed.py`
+- **Build command:** `pip install -r requirements.txt && python migrate.py && python seed.py`
 - **Start command:** `gunicorn wsgi:app`
 - **Auto-deploys** from GitHub `main` branch
-- **Note:** Starter plan keeps the server always on — no cold start delay.
+- **Note:** Free tier sleeps after inactivity. First login may take up to 30 seconds. Upgrade to Starter ($7/mo) to eliminate cold start.
 
 ### GitHub
 - **Repository:** https://github.com/wendymarquette68/ScholarScaffold

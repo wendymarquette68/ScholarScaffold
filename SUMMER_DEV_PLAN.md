@@ -5,23 +5,26 @@ Bring ScholarScaffold from **proof of concept** to **IRB-ready for Fall 2026 dep
 
 ---
 
-## Current State (as of February 2026)
+## Current State (as of April 2026)
 
 - All 6 pipeline stages built and functional in UI
-- Backend API deployed on Render (Starter plan, always on)
-- Frontend deployed on Netlify (free tier)
+- Backend API deployed on Render (free tier — ~30s cold start)
+- Frontend deployed on Netlify (free tier, manual deploy)
 - JWT authentication with bcrypt password hashing
 - IRB consent gate enforced before any pipeline access
 - Pipeline gating enforces correct stage progression
-- IRB data logging endpoint exists (`/api/irb/log`, consent-gated)
+- IRB event logging fully wired: stage_enter on all pages + 5 completion events
+- Research question formulation step added to Research Strategy
+- Proposal Builder expanded to 9 sections including Theoretical Framework and Proposed Methodology (R1-level)
+- Data persistence bug fixed — all pages now call backend APIs
 
-### Known Gaps
-- SQLite database resets on every backend redeploy (data loss)
-- Some pipeline stage data doesn't reliably persist across sessions
-- IRB logging not yet tested end-to-end
-- No data export/anonymization for researchers
+### Known Gaps (as of April 2026)
+- SQLite database still used on Render — resets on redeploy (Phase 1 below)
+- No data export endpoint for researchers (CLAUDE.md has standing instruction to build this)
 - No password reset flow
-- No admin dashboard for researcher oversight
+- No admin dashboard
+- Mobile layout breaks on small screens (sidebar fixed at 256px)
+- Research Strategy not enforced as prerequisite for Design Literacy
 
 ---
 
@@ -40,7 +43,7 @@ Bring ScholarScaffold from **proof of concept** to **IRB-ready for Fall 2026 dep
 
 ---
 
-## Phase 2: Full Data Persistence (Weeks 2–3)
+## Phase 2: Full Data Persistence (Weeks 2–3) ✅ COMPLETE
 **Priority: CRITICAL — students will lose work without this**
 
 | Task | Details | Est. Time |
@@ -57,7 +60,7 @@ Bring ScholarScaffold from **proof of concept** to **IRB-ready for Fall 2026 dep
 
 ---
 
-## Phase 3: IRB Data Logging (Week 3)
+## Phase 3: IRB Data Logging (Week 3) ✅ COMPLETE
 **Priority: HIGH — required for research data collection**
 
 | Task | Details | Est. Time |
