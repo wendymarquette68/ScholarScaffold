@@ -211,12 +211,17 @@ def score_synthesis_depth(literature: str) -> DimensionResult:
     return DimensionResult(score=score, feedback=' '.join(issues))
 
 
-def score_methodological_awareness(literature: str, background: str, purpose: str) -> DimensionResult:
+def score_methodological_awareness(literature: str, background: str, purpose: str, methodology: str = '') -> DimensionResult:
     """Evaluate awareness of research methodology."""
     score = 1
     issues = []
 
-    all_text = f"{literature} {background} {purpose}".lower()
+    all_text = f"{literature} {background} {purpose} {methodology}".lower()
+
+    # Bonus for having a dedicated methodology section
+    if methodology and len(methodology.strip()) > 100:
+        score += 1
+        issues.append("Dedicated methodology section present.")
 
     # Check for design-related terminology
     design_terms = ['randomized', 'controlled trial', 'cohort', 'cross-sectional',
@@ -259,21 +264,26 @@ def score_structural_completeness(draft: dict) -> DimensionResult:
     score = 1
     issues = []
 
-    sections = {
+    core_sections = {
         'Title': draft.get('title', ''),
         'Background': draft.get('background', ''),
         'Problem Statement': draft.get('problemStatement', ''),
-        'Purpose / Research Question': draft.get('purposeResearchQuestion', ''),
+        'Research Questions & Hypotheses': draft.get('purposeResearchQuestion', ''),
         'Literature Synthesis': draft.get('literatureSynthesis', ''),
         'Significance': draft.get('significance', ''),
-        'Preliminary Questions': draft.get('preliminaryQuestions', ''),
+        'Limitations & Future Directions': draft.get('preliminaryQuestions', ''),
+    }
+    r1_sections = {
+        'Theoretical/Conceptual Framework': draft.get('theoreticalFramework', ''),
+        'Proposed Methodology': draft.get('proposedMethodology', ''),
     }
 
+    all_sections = {**core_sections, **r1_sections}
     present = 0
     substantive = 0
     missing = []
 
-    for name, content in sections.items():
+    for name, content in all_sections.items():
         if content and len(content.strip()) > 0:
             present += 1
             if len(content.strip()) > 50:
@@ -286,11 +296,12 @@ def score_structural_completeness(draft: dict) -> DimensionResult:
     if missing:
         issues.append(f"Missing sections: {', '.join(missing)}.")
 
-    if present == 7:
+    total = len(all_sections)
+    if present >= 7:
         score += 1
-    if substantive >= 5:
+    if substantive >= 6:
         score += 1
-    if substantive == 7:
+    if substantive >= total - 1:
         score += 1
 
     score = min(score, 4)
@@ -390,12 +401,14 @@ def score_proposal(draft_data: dict, included_count: int) -> dict:
     background = draft_data.get('background', '')
     problem = draft_data.get('problemStatement', '')
     purpose = draft_data.get('purposeResearchQuestion', '')
+    framework = draft_data.get('theoreticalFramework', '')
     literature = draft_data.get('literatureSynthesis', '')
+    methodology = draft_data.get('proposedMethodology', '')
     significance = draft_data.get('significance', '')
     questions = draft_data.get('preliminaryQuestions', '')
 
     full_text = '\n\n'.join(
-        s for s in [title, background, problem, purpose, literature, significance, questions] if s
+        s for s in [title, background, problem, purpose, framework, literature, methodology, significance, questions] if s
     )
 
     results = {
@@ -403,7 +416,7 @@ def score_proposal(draft_data: dict, included_count: int) -> dict:
         'Scope Precision': score_scope_precision(purpose, background, literature),
         'Evidence Integration': score_evidence_integration(literature, included_count),
         'Synthesis Depth': score_synthesis_depth(literature),
-        'Methodological Awareness': score_methodological_awareness(literature, background, purpose),
+        'Methodological Awareness': score_methodological_awareness(literature, background, purpose, methodology),
         'Structural Completeness': score_structural_completeness(draft_data),
         'Citation Presence': score_citation_presence(full_text),
     }

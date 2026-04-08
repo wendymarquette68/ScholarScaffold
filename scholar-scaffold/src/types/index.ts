@@ -51,7 +51,9 @@ export interface ProposalDraft {
   background: string;
   problemStatement: string;
   purposeResearchQuestion: string;
+  theoreticalFramework: string;
   literatureSynthesis: string;
+  proposedMethodology: string;
   significance: string;
   preliminaryQuestions: string;
   submittedForRubric?: boolean;
@@ -105,6 +107,7 @@ export interface ResearchDesign {
 export interface SearchStrategy {
   topic: string;
   population: string;
+  researchQuestion?: string;
   keywords: string[];
   operators: string[];
   filters: string[];

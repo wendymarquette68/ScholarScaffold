@@ -77,7 +77,9 @@ def save_draft():
         draft.background = data.get('background', draft.background)
         draft.problem_statement = data.get('problemStatement', draft.problem_statement)
         draft.purpose_research_question = data.get('purposeResearchQuestion', draft.purpose_research_question)
+        draft.theoretical_framework = data.get('theoreticalFramework', draft.theoretical_framework)
         draft.literature_synthesis = data.get('literatureSynthesis', draft.literature_synthesis)
+        draft.proposed_methodology = data.get('proposedMethodology', draft.proposed_methodology)
         draft.significance = data.get('significance', draft.significance)
         draft.preliminary_questions = data.get('preliminaryQuestions', draft.preliminary_questions)
     else:
@@ -89,7 +91,9 @@ def save_draft():
             background=data.get('background', ''),
             problem_statement=data.get('problemStatement', ''),
             purpose_research_question=data.get('purposeResearchQuestion', ''),
+            theoretical_framework=data.get('theoreticalFramework', ''),
             literature_synthesis=data.get('literatureSynthesis', ''),
+            proposed_methodology=data.get('proposedMethodology', ''),
             significance=data.get('significance', ''),
             preliminary_questions=data.get('preliminaryQuestions', ''),
         )

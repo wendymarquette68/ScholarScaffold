@@ -4,6 +4,7 @@ import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { Edit2, Save, AlertTriangle } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
+import { updateAnnotation } from '../services/api';
 
 const narrativeCite = (authors: string, year: number): string => {
   // Parse APA author strings like "Chen, L., Martinez, R., & Thompson, K."
@@ -39,6 +40,7 @@ export default function BibliographyPage() {
   const includedArticles = articles.filter(a => a.reviewComplete && a.review?.inclusionDecision === 'include');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState({ summary: '', evaluation: '', relevance: '' });
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   const buildApa = (a: typeof includedArticles[0]) => {
     return `${a.authors} (${a.year}). ${a.title}. *${a.journal}*. ${a.doi ? `https://doi.org/${a.doi}` : ''}`;
@@ -47,6 +49,18 @@ export default function BibliographyPage() {
   const startEdit = (articleId: string, summary: string, evaluation: string, relevance: string) => {
     setEditingId(articleId);
     setEditText({ summary, evaluation, relevance });
+  };
+
+  const saveEdit = async (articleId: string) => {
+    setSavingId(articleId);
+    try {
+      await updateAnnotation(articleId, editText);
+    } catch {
+      // Silently fail — annotation still visible in local state
+    } finally {
+      setSavingId(null);
+      setEditingId(null);
+    }
   };
 
   const isTooShort = (text: string) => text.length < 50;
@@ -85,10 +99,13 @@ export default function BibliographyPage() {
                     {buildApa(article)}
                   </div>
                   <button
-                    onClick={() => isEditing ? setEditingId(null) : startEdit(article.id, summary, evaluation, relevance)}
-                    className="ml-4 flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                    onClick={() => isEditing ? saveEdit(article.id) : startEdit(article.id, summary, evaluation, relevance)}
+                    disabled={savingId === article.id}
+                    className="ml-4 flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50"
                   >
-                    {isEditing ? <><Save className="w-4 h-4" /> Save</> : <><Edit2 className="w-4 h-4" /> Edit</>}
+                    {isEditing
+                      ? <><Save className="w-4 h-4" /> {savingId === article.id ? 'Saving...' : 'Save'}</>
+                      : <><Edit2 className="w-4 h-4" /> Edit</>}
                   </button>
                 </div>
 

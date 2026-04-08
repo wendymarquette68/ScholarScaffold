@@ -20,6 +20,7 @@ def save_strategy():
     if strategy:
         strategy.topic = data.get('topic', strategy.topic)
         strategy.population = data.get('population', strategy.population)
+        strategy.research_question = data.get('researchQuestion', strategy.research_question)
         strategy.keywords = data.get('keywords', strategy.keywords)
         strategy.boolean_operators = data.get('booleanOperators', strategy.boolean_operators)
         strategy.filters = data.get('filters', strategy.filters)
@@ -31,6 +32,7 @@ def save_strategy():
             user_id=user.id,
             topic=data.get('topic', ''),
             population=data.get('population', ''),
+            research_question=data.get('researchQuestion', ''),
             keywords=data.get('keywords', []),
             boolean_operators=data.get('booleanOperators', []),
             filters=data.get('filters', {}),

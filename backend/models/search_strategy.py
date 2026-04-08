@@ -14,6 +14,7 @@ class SearchStrategy(db.Model):
     filters = db.Column(db.JSON, default=dict)
     selected_databases = db.Column(db.JSON, default=list)
     search_string = db.Column(db.Text)
+    research_question = db.Column(db.Text, default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -28,5 +29,6 @@ class SearchStrategy(db.Model):
             'filters': self.filters,
             'selectedDatabases': self.selected_databases,
             'searchString': self.search_string,
+            'researchQuestion': self.research_question or '',
             'createdAt': self.created_at.isoformat() if self.created_at else None,
         }

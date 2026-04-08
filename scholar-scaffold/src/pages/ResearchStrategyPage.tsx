@@ -22,6 +22,7 @@ export default function ResearchStrategyPage() {
   const [step, setStep] = useState(1);
   const [topic, setTopic] = useState('');
   const [population, setPopulation] = useState('');
+  const [researchQuestion, setResearchQuestion] = useState('');
   const [keywords, setKeywords] = useState<string[]>([]);
   const [newKeyword, setNewKeyword] = useState('');
   const [operators, setOperators] = useState<string[]>([]);
@@ -88,7 +89,7 @@ export default function ResearchStrategyPage() {
     setSaving(true);
     setSaveError('');
     try {
-      await saveSearchStrategy('', { topic, population, keywords, operators, filters: selectedFilters, searchString });
+      await saveSearchStrategy('', { topic, population, researchQuestion, keywords, operators, filters: selectedFilters, searchString });
       await markStrategyComplete();
       completeSearchStrategy();
     } catch {
@@ -98,22 +99,27 @@ export default function ResearchStrategyPage() {
     }
   };
 
+  const rqHasPopulation = researchQuestion.toLowerCase().includes(population.toLowerCase().split(' ')[0]) || population.length === 0;
+  const rqHasQuestion = researchQuestion.includes('?');
+  const rqIsSpecific = researchQuestion.length > 40;
+
   return (
     <PageWrapper title="Research Strategy Coach" subtitle="Build an effective database search strategy">
       <GuidanceBanner
         title="What to do here"
         storageKey="research_strategy_guide"
         steps={[
-          'Define your research topic and target population.',
-          'Build a list of keywords and select Boolean operators (AND, OR, NOT).',
-          'Choose which databases you plan to search (PubMed, CINAHL, etc.).',
-          'Review your generated search string, copy it, and mark this stage complete.',
+          'Step 1: Define your research topic and target population.',
+          'Step 2: Formulate a focused research question — this will carry forward into your proposal.',
+          'Step 3: Build your keyword list and select Boolean operators (AND, OR, NOT).',
+          'Step 4: Choose the databases you plan to search (PubMed, CINAHL, etc.).',
+          'Step 5: Review your generated search string, copy it, and mark this stage complete.',
         ]}
       />
       <div className="space-y-6">
         {/* Step Indicators */}
         <div className="flex items-center gap-2">
-          {[1, 2, 3, 4].map(s => (
+          {[1, 2, 3, 4, 5].map(s => (
             <button
               key={s}
               onClick={() => setStep(s)}
@@ -161,15 +167,101 @@ export default function ResearchStrategyPage() {
               disabled={!topic || !population}
               className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Next: Build Keywords
+              Next: Formulate Research Question
             </button>
           </div>
         )}
 
-        {/* Step 2: Keyword Builder */}
+        {/* Step 2: Research Question */}
         {step === 2 && (
           <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Step 2: Keyword Builder</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Step 2: Formulate Your Research Question</h2>
+            <p className="text-sm text-gray-600">
+              A strong research question is specific, focused, and answerable through empirical research.
+              It will guide everything: which articles are relevant, how you evaluate evidence, and what your proposal argues.
+            </p>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+              <p className="text-sm font-semibold text-blue-800">Common Research Question Frameworks</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-blue-700">
+                <div className="bg-white rounded-lg p-3 border border-blue-100">
+                  <p className="font-semibold mb-1">PICO (Quantitative / Clinical)</p>
+                  <p><strong>P</strong>opulation · <strong>I</strong>ntervention · <strong>C</strong>omparison · <strong>O</strong>utcome</p>
+                  <p className="mt-1 italic">"Among [P], does [I] compared to [C] improve [O]?"</p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-blue-100">
+                  <p className="font-semibold mb-1">PEO (Qualitative / Social)</p>
+                  <p><strong>P</strong>opulation · <strong>E</strong>xposure/Experience · <strong>O</strong>utcome/Interest</p>
+                  <p className="mt-1 italic">"What is the experience of [E] among [P] in relation to [O]?"</p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-blue-100">
+                  <p className="font-semibold mb-1">General Relationship</p>
+                  <p className="italic">"What is the relationship between [variable A] and [variable B] among [population]?"</p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-blue-100">
+                  <p className="font-semibold mb-1">Descriptive / Exploratory</p>
+                  <p className="italic">"What are the [factors/barriers/facilitators] to [phenomenon] among [population]?"</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-1">
+                <p className="text-xs text-blue-600 font-medium">Quick fill:</p>
+                {[
+                  `Among ${population || '[population]'}, what is the effect of [intervention] on [outcome]?`,
+                  `What is the relationship between [variable A] and [variable B] among ${population || '[population]'}?`,
+                  `What are the barriers to [phenomenon] among ${population || '[population]'}?`,
+                ].map((template, i) => (
+                  <button key={i} onClick={() => setResearchQuestion(template)}
+                    className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded-lg transition-colors">
+                    Use template {i + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Your Research Question *</label>
+              <textarea
+                value={researchQuestion}
+                onChange={e => setResearchQuestion(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none h-24 resize-none"
+                placeholder="Write your research question here..."
+              />
+            </div>
+
+            {researchQuestion.length > 0 && (
+              <div className="space-y-1.5">
+                <div className={`flex items-center gap-2 text-xs ${rqHasQuestion ? 'text-green-600' : 'text-amber-600'}`}>
+                  <span>{rqHasQuestion ? '✓' : '!'}</span>
+                  {rqHasQuestion ? 'Phrased as a question' : 'Make sure your research question ends with a question mark'}
+                </div>
+                <div className={`flex items-center gap-2 text-xs ${rqIsSpecific ? 'text-green-600' : 'text-amber-600'}`}>
+                  <span>{rqIsSpecific ? '✓' : '!'}</span>
+                  {rqIsSpecific ? 'Appears sufficiently specific' : 'Your question seems brief — add more specificity (population, variable, context)'}
+                </div>
+                <div className={`flex items-center gap-2 text-xs ${rqHasPopulation ? 'text-green-600' : 'text-amber-600'}`}>
+                  <span>{rqHasPopulation ? '✓' : '!'}</span>
+                  {rqHasPopulation ? 'Population mentioned' : `Consider including your population: "${population}"`}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <button onClick={() => setStep(1)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">Back</button>
+              <button
+                onClick={() => setStep(3)}
+                disabled={!researchQuestion.trim()}
+                className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next: Build Keywords
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Keyword Builder */}
+        {step === 3 && (
+          <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900">Step 3: Keyword Builder</h2>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -224,11 +316,11 @@ export default function ResearchStrategyPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setStep(1)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+              <button onClick={() => setStep(2)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
                 Back
               </button>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 disabled={keywords.length === 0}
                 className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -238,10 +330,10 @@ export default function ResearchStrategyPage() {
           </div>
         )}
 
-        {/* Step 3: Database Suggestions */}
-        {step === 3 && (
+        {/* Step 4: Database Suggestions */}
+        {step === 4 && (
           <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Step 3: Recommended Databases</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Step 4: Recommended Databases</h2>
             <p className="text-sm text-gray-600">Select the databases you plan to search. This helps you keep track of where to run your search string.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {suggestedDatabases.map(db => {
@@ -272,20 +364,20 @@ export default function ResearchStrategyPage() {
               </p>
             )}
             <div className="flex gap-2">
-              <button onClick={() => setStep(2)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+              <button onClick={() => setStep(3)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
                 Back
               </button>
-              <button onClick={() => setStep(4)} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
+              <button onClick={() => setStep(5)} className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors">
                 Next: Search String
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 4: Search String Generator */}
-        {step === 4 && (
+        {/* Step 5: Search String Generator */}
+        {step === 5 && (
           <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Step 4: Your Search String</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Step 5: Your Search String</h2>
             <div className="bg-gray-50 rounded-xl p-4 font-mono text-sm text-gray-800 border border-gray-200">
               {searchString || 'No keywords added yet.'}
             </div>
@@ -302,7 +394,7 @@ export default function ResearchStrategyPage() {
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copied ? 'Copied!' : 'Copy to Clipboard'}
               </button>
-              <button onClick={() => setStep(3)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+              <button onClick={() => setStep(4)} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
                 Back
               </button>
             </div>

@@ -15,6 +15,8 @@ class ProposalDraft(db.Model):
     literature_synthesis = db.Column(db.Text, default='')
     significance = db.Column(db.Text, default='')
     preliminary_questions = db.Column(db.Text, default='')
+    theoretical_framework = db.Column(db.Text, default='')
+    proposed_methodology = db.Column(db.Text, default='')
     submitted_for_rubric = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -38,6 +40,8 @@ class ProposalDraft(db.Model):
             'literatureSynthesis': self.literature_synthesis,
             'significance': self.significance,
             'preliminaryQuestions': self.preliminary_questions,
+            'theoreticalFramework': self.theoretical_framework or '',
+            'proposedMethodology': self.proposed_methodology or '',
             'submittedForRubric': self.submitted_for_rubric,
             'createdAt': self.created_at.isoformat() if self.created_at else None,
             'updatedAt': self.updated_at.isoformat() if self.updated_at else None,
@@ -50,7 +54,8 @@ class ProposalDraft(db.Model):
         """Concatenate all sections into a single text for rubric scoring."""
         sections = [
             self.title, self.background, self.problem_statement,
-            self.purpose_research_question, self.literature_synthesis,
+            self.purpose_research_question, self.theoretical_framework or '',
+            self.literature_synthesis, self.proposed_methodology or '',
             self.significance, self.preliminary_questions,
         ]
         return '\n\n'.join(s for s in sections if s)
