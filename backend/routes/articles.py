@@ -169,6 +169,26 @@ def save_review(article_id):
     return jsonify({'success': True, 'review': review.to_dict()})
 
 
+@articles_bp.route('/<article_id>', methods=['DELETE'])
+def delete_article(article_id):
+    user = get_current_user()
+    if not user:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    article = Article.query.filter_by(id=article_id, user_id=user.id).first()
+    if not article:
+        return jsonify({'error': 'Article not found'}), 404
+
+    if article.review:
+        db.session.delete(article.review)
+    if article.annotation:
+        db.session.delete(article.annotation)
+    db.session.delete(article)
+    db.session.commit()
+
+    return jsonify({'success': True})
+
+
 @articles_bp.route('/progress', methods=['GET'])
 def get_progress():
     user = get_current_user()

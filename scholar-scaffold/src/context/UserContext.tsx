@@ -10,7 +10,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User, Article, ReviewProgress, PipelineStage, StageStatus } from '../types';
 import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
-import { getArticles, setAuthToken, getAuthToken, getCurrentUser } from '../services/api';
+import { getArticles, setAuthToken, getAuthToken, getCurrentUser, deleteArticle as apiDeleteArticle } from '../services/api';
 
 interface UserContextType {
   user: User | null;
@@ -30,6 +30,7 @@ interface UserContextType {
   completeSearchStrategy: () => void;
   addArticle: (article: Article) => void;
   updateArticle: (article: Article) => void;
+  deleteArticle: (articleId: string) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -97,6 +98,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
   }, []);
 
+  const deleteArticle = useCallback(async (articleId: string) => {
+    await apiDeleteArticle(articleId);
+    setArticles(prev => prev.filter(a => a.id !== articleId));
+  }, []);
+
   // Calculate review progress — used to determine pipeline stage unlocking
   const completedReviews = articles.filter(a => a.reviewComplete);
   const reviewProgress: ReviewProgress = {
@@ -153,7 +159,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       articles, setArticles, reviewProgress, pipelineStages,
       isProposalUnlocked, isArticleReviewsUnlocked,
       updateConsentFlag, completeDesignLiteracy, completeSearchStrategy,
-      addArticle, updateArticle,
+      addArticle, updateArticle, deleteArticle,
     }}>
       {children}
     </UserContext.Provider>

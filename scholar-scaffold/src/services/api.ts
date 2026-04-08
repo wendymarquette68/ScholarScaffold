@@ -152,6 +152,11 @@ export async function updateArticle(articleId: string, articleData: Partial<Arti
   return res.json();
 }
 
+export async function deleteArticle(articleId: string) {
+  const res = await apiFetch(`/articles/${articleId}`, { method: 'DELETE' });
+  return res.json();
+}
+
 export async function saveArticleReview(articleId: string, reviewData: ArticleReview) {
   const res = await apiFetch(`/articles/${articleId}/review`, {
     method: 'POST',

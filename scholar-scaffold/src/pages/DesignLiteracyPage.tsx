@@ -6,6 +6,7 @@ import SectionAlert from '../components/common/SectionAlert';
 import { researchDesigns, analyticStrategies, quizQuestions } from '../data/mockData';
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
+import { saveQuizResult } from '../services/api';
 
 type TabId = 'quantitative' | 'qualitative' | 'synthesis' | 'analytic' | 'hierarchy' | 'quiz';
 
@@ -15,6 +16,8 @@ export default function DesignLiteracyPage() {
   const [expandedDesign, setExpandedDesign] = useState<string | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number | null>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [savingQuiz, setSavingQuiz] = useState(false);
+  const [quizSaveError, setQuizSaveError] = useState('');
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'quantitative', label: 'Quantitative' },
@@ -33,10 +36,22 @@ export default function DesignLiteracyPage() {
   const quizPercentage = Math.round((quizScore / quizQuestions.length) * 100);
   const quizPassed = quizPercentage >= 70;
 
-  const handleQuizSubmit = () => {
-    setQuizSubmitted(true);
-    if (quizPassed) {
-      completeDesignLiteracy();
+  const handleQuizSubmit = async () => {
+    setSavingQuiz(true);
+    setQuizSaveError('');
+    try {
+      const responses = Object.fromEntries(
+        Object.entries(quizAnswers).map(([k, v]) => [k, v ?? -1])
+      );
+      await saveQuizResult('', quizScore, responses);
+      setQuizSubmitted(true);
+      if (quizPassed) {
+        completeDesignLiteracy();
+      }
+    } catch {
+      setQuizSaveError('Failed to save quiz. Please check your connection and try again.');
+    } finally {
+      setSavingQuiz(false);
     }
   };
 
@@ -234,13 +249,16 @@ export default function DesignLiteracyPage() {
           ))}
 
           {!quizSubmitted ? (
-            <button
-              onClick={handleQuizSubmit}
-              disabled={!allAnswered}
-              className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Submit Quiz
-            </button>
+            <div className="space-y-2">
+              {quizSaveError && <SectionAlert type="warning" message={quizSaveError} />}
+              <button
+                onClick={handleQuizSubmit}
+                disabled={!allAnswered || savingQuiz}
+                className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {savingQuiz ? 'Submitting...' : 'Submit Quiz'}
+              </button>
+            </div>
           ) : (
             <div className={`p-6 rounded-xl text-center ${quizPassed ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
               <div className={`text-3xl font-bold ${quizPassed ? 'text-green-600' : 'text-red-600'}`}>

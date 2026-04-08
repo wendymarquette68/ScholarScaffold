@@ -5,6 +5,7 @@ import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { Copy, Check, Search, ArrowRight } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
+import { saveSearchStrategy, markStrategyComplete } from '../services/api';
 
 const suggestedDatabases = [
   { name: 'PubMed', description: 'Biomedical and life sciences literature' },
@@ -27,6 +28,8 @@ export default function ResearchStrategyPage() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedDatabases, setSelectedDatabases] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const toggleDatabase = (name: string) => {
     if (selectedDatabases.includes(name)) {
@@ -81,8 +84,18 @@ export default function ResearchStrategyPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleComplete = () => {
-    completeSearchStrategy();
+  const handleComplete = async () => {
+    setSaving(true);
+    setSaveError('');
+    try {
+      await saveSearchStrategy('', { topic, population, keywords, operators, filters: selectedFilters, searchString });
+      await markStrategyComplete();
+      completeSearchStrategy();
+    } catch {
+      setSaveError('Failed to save. Please check your connection and try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -294,12 +307,16 @@ export default function ResearchStrategyPage() {
               </button>
             </div>
             {!user?.searchStrategyComplete && (
-              <button
-                onClick={handleComplete}
-                className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors mt-4"
-              >
-                Mark Stage Complete
-              </button>
+              <div className="mt-4 space-y-2">
+                {saveError && <SectionAlert type="warning" message={saveError} />}
+                <button
+                  onClick={handleComplete}
+                  disabled={saving}
+                  className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {saving ? 'Saving...' : 'Mark Stage Complete'}
+                </button>
+              </div>
             )}
             {user?.searchStrategyComplete && (
               <div className="space-y-3 mt-4">

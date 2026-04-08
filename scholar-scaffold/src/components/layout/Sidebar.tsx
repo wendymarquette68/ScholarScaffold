@@ -10,7 +10,7 @@ const navItems = [
   { path: '/research-strategy', label: 'Research Strategy', icon: Search, alwaysAccessible: true },
   { path: '/design-literacy', label: 'Design Literacy', icon: GraduationCap, alwaysAccessible: true },
   { path: '/articles', label: 'Article Reviews', icon: FileText, requiresDesignLiteracy: true },
-  { path: '/bibliography', label: 'Bibliography', icon: BookMarked, requiresDesignLiteracy: true },
+  { path: '/bibliography', label: 'Annotated Bibliography', icon: BookMarked, requiresDesignLiteracy: true },
   { path: '/proposal', label: 'Proposal Builder', icon: Edit3, requiresProposalUnlock: true },
   { path: '/rubric', label: 'Rubric Scoring', icon: ClipboardCheck, requiresProposalUnlock: true },
 ];

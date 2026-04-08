@@ -5,9 +5,10 @@ import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { researchDesigns } from '../data/mockData';
 import { ArticleReview } from '../types';
-import { Trash2, Plus, ArrowRight, CheckCircle } from 'lucide-react';
+import { Trash2, Plus, ArrowRight, CheckCircle, Pencil } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
 import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
+import { saveArticleReview } from '../services/api';
 
 // Expected design strength ranges for coaching feedback
 const designStrengthExpected: Record<string, { min: number; max: number; label: string }> = {
@@ -98,17 +99,28 @@ export default function ArticleReviewPage() {
   };
 
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationErrors = validate();
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
       return;
     }
     setErrors([]);
-    const updatedArticle = { ...article, review, reviewComplete: true };
-    updateArticle(updatedArticle);
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      await saveArticleReview(article.id, review);
+      const updatedArticle = { ...article, review, reviewComplete: true };
+      updateArticle(updatedArticle);
+      setSubmitted(true);
+    } catch {
+      setSubmitError('Failed to save review. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const sections = [
@@ -119,8 +131,8 @@ export default function ArticleReviewPage() {
 
   const allDesigns = researchDesigns.map(d => d.name);
 
-  // Coaching: design-rating calibration
-  const expectedRange = designStrengthExpected[review.studyDesign];
+  // Coaching: design-rating calibration (skip if design is not specified)
+  const expectedRange = review.studyDesign !== 'Not specified' ? designStrengthExpected[review.studyDesign] : undefined;
   const ratingMismatch = expectedRange && (
     review.designStrengthRating < expectedRange.min || review.designStrengthRating > expectedRange.max
   );
@@ -207,10 +219,19 @@ export default function ArticleReviewPage() {
         ]}
       />
       <div className="space-y-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <p className="text-sm text-gray-600"><strong>Authors:</strong> {article.authors} ({article.year})</p>
-          <p className="text-sm text-gray-600"><strong>Journal:</strong> {article.journal}</p>
-          {article.doi && <p className="text-sm text-gray-600"><strong>DOI:</strong> {article.doi}</p>}
+        <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm text-gray-600"><strong>Authors:</strong> {article.authors} ({article.year})</p>
+            <p className="text-sm text-gray-600"><strong>Journal:</strong> {article.journal}</p>
+            {article.doi && <p className="text-sm text-gray-600"><strong>DOI:</strong> {article.doi}</p>}
+          </div>
+          <Link
+            to={`/articles/${article.id}/edit`}
+            className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 font-medium flex-shrink-0"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            Edit Article Info
+          </Link>
         </div>
 
         <div className="flex gap-2">
@@ -241,13 +262,15 @@ export default function ArticleReviewPage() {
               <select value={review.studyDesign} onChange={e => updateReview('studyDesign', e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none">
                 <option value="">Select a design...</option>
+                <option value="Not specified">Not specified (not clearly stated in article)</option>
                 {allDesigns.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Sample Description *</label>
               <textarea value={review.sample} onChange={e => updateReview('sample', e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none" />
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none"
+                placeholder="Describe the sample (e.g., n=120, adult patients with Type 2 diabetes). If not clearly stated, enter 'Not specified'." />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Key Findings *</label>
@@ -305,7 +328,8 @@ export default function ArticleReviewPage() {
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Limitations (minimum 3 required) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Limitations (minimum 3 required) *</label>
+              <p className="text-xs text-gray-400 mb-2">If a limitation is not clearly stated in the article, enter "Not specified" for that item.</p>
               {review.limitations.map((lim, i) => (
                 <div key={i} className="flex gap-2 mb-2">
                   <input value={lim} onChange={e => updateLimitation(i, e.target.value)}
@@ -406,10 +430,13 @@ export default function ArticleReviewPage() {
                 </ul>
               </div>
             )}
+            {submitError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600">{submitError}</div>
+            )}
             <div className="flex gap-2">
               <button onClick={() => { setActiveSection('B'); window.scrollTo(0, 0); }} className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">Back</button>
-              <button onClick={handleSubmit} className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-green-700 transition-colors">
-                Submit Review
+              <button onClick={handleSubmit} disabled={submitting} className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-green-700 disabled:opacity-50 transition-colors">
+                {submitting ? 'Saving...' : 'Submit Review'}
               </button>
             </div>
           </div>

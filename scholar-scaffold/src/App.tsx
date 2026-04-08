@@ -137,6 +137,18 @@ export default function App() {
         }
       />
       <Route
+        path="/articles/:id/edit"
+        element={
+          <ProtectedRoute>
+            <ConsentGate>
+              <AppLayout>
+                <AddArticlePage />
+              </AppLayout>
+            </ConsentGate>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/articles/:id"
         element={
           <ProtectedRoute>

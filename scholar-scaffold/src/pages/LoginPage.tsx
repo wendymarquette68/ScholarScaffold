@@ -98,8 +98,9 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-          <strong>Pilot Testers:</strong> Please <Link to="/register" className="text-blue-600 font-semibold underline">register your own account</Link> so your progress is tracked individually. Using a shared account will mix your data with other testers.
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 space-y-2">
+          <p><strong>Pilot Testers:</strong> Please <Link to="/register" className="text-blue-600 font-semibold underline">register your own account</Link> so your progress is tracked individually. Using a shared account will mix your data with other testers.</p>
+          <p className="text-blue-600">First sign-in may take up to 30 seconds while the server starts up. If you see an error, please wait a moment and try again.</p>
         </div>
       </div>
     </div>
