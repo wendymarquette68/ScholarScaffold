@@ -154,7 +154,9 @@ export const mockProposalDraft: ProposalDraft = {
   background: 'Anxiety disorders are among the most prevalent mental health concerns on college campuses, affecting approximately 30% of undergraduate students (ACHA, 2023). Despite the availability of campus counseling services, many students face barriers to access including stigma, time constraints, and lack of awareness.',
   problemStatement: 'While mindfulness-based interventions have shown promise in clinical populations, there is limited research examining their effectiveness specifically within the undergraduate student population when delivered through accessible, peer-led formats.',
   purposeResearchQuestion: 'The purpose of this study is to examine the effectiveness of a peer-led mindfulness program on reducing anxiety symptoms among undergraduate students. Research Question: Does participation in a 10-week peer-led mindfulness program reduce self-reported anxiety scores compared to a control group?',
+  theoreticalFramework: '',
   literatureSynthesis: 'The existing literature demonstrates that mindfulness-based stress reduction programs can effectively reduce anxiety in college populations (Chen et al., 2023). However, barriers to mental health service utilization persist (Williams & Patel, 2022).',
+  proposedMethodology: '',
   significance: 'This study addresses a critical gap by examining whether peer-led delivery of mindfulness interventions can overcome access barriers while maintaining effectiveness.',
   preliminaryQuestions: 'What is the optimal duration for a peer-led mindfulness program? How can we measure anxiety in a valid and reliable way? What training do peer facilitators need?',
 };

@@ -6,7 +6,8 @@ import LockedStage from '../components/common/LockedStage';
 import SectionAlert from '../components/common/SectionAlert';
 import { saveProposalDraft as apiSaveProposalDraft, getProposalVersion, getSearchStrategy, logResearchData } from '../services/api';
 import { ProposalDraft } from '../types';
-import { History, BookMarked, Save } from 'lucide-react';
+import { History, BookMarked, Save, Download } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 import GuidanceBanner from '../components/common/GuidanceBanner';
 import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
 
@@ -226,6 +227,36 @@ export default function ProposalPage() {
     setCurrentVersion(newVersion);
   };
 
+  const exportToPdf = () => {
+    const filename = draft.title
+      ? `${draft.title.replace(/[^a-z0-9]/gi, '_').substring(0, 60)}.pdf`
+      : `proposal_draft_${currentVersion}.pdf`;
+
+    const content = document.createElement('div');
+    content.style.cssText = 'font-family: Georgia, serif; font-size: 12pt; line-height: 1.6; color: #111; padding: 40px;';
+
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    content.innerHTML = `
+      <p style="font-size:10pt;color:#666;margin-bottom:32px;">ScholarScaffold — Research Proposal | Draft ${currentVersion} | Generated ${today}</p>
+      ${proposalSections.map(section => {
+        const value = (draft[section.key] as string) || '';
+        if (!value.trim()) return '';
+        return `
+          <div style="margin-bottom:28px;">
+            <h2 style="font-size:13pt;font-weight:bold;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:8px;">${section.label}</h2>
+            <p style="white-space:pre-wrap;margin:0;">${value}</p>
+          </div>`;
+      }).join('')}
+    `;
+
+    html2pdf().set({
+      margin: [20, 20, 20, 20],
+      filename,
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+    }).from(content).save();
+  };
+
   const openAnnotationModal = (field: SectionKey) => {
     setActiveField(field);
     setShowAnnotationModal(true);
@@ -274,6 +305,10 @@ export default function ProposalPage() {
               Save as Draft {currentVersion + 1}
             </button>
           )}
+          <button onClick={exportToPdf}
+            className="flex items-center gap-1.5 bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors">
+            <Download className="w-4 h-4" /> Export PDF
+          </button>
           <button onClick={() => saveDraft()} disabled={saving}
             className="flex items-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors disabled:opacity-50">
             <Save className="w-4 h-4" />
@@ -346,7 +381,11 @@ export default function ProposalPage() {
         })}
       </div>
 
-      <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+      <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200 flex-wrap">
+        <button onClick={exportToPdf}
+          className="flex items-center gap-1.5 bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+          <Download className="w-4 h-4" /> Export PDF
+        </button>
         <button onClick={() => saveDraft()} disabled={saving}
           className="flex items-center gap-1.5 bg-primary-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors disabled:opacity-50">
           <Save className="w-4 h-4" />

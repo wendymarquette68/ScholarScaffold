@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
-import { Edit2, Save, AlertTriangle } from 'lucide-react';
+import { Edit2, Save, AlertTriangle, Download } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 import GuidanceBanner from '../components/common/GuidanceBanner';
 import { updateAnnotation, logResearchData } from '../services/api';
 
@@ -68,6 +69,42 @@ export default function BibliographyPage() {
   };
 
   const isTooShort = (text: string) => text.length < 50;
+
+  const exportToPdf = () => {
+    const content = document.createElement('div');
+    content.style.cssText = 'font-family: Georgia, serif; font-size: 12pt; line-height: 1.6; color: #111; padding: 40px;';
+
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const entries = includedArticles.map(article => {
+      const review = article.review!;
+      const cite = narrativeCite(article.authors, article.year);
+      const summary = `${cite} examined ${review.researchQuestion.toLowerCase()} using a ${review.studyDesign.toLowerCase()} design with ${review.sample.toLowerCase()}. ${review.keyFindings}`;
+      const evaluation = `The study employed a ${review.studyDesign.toLowerCase()} design rated ${review.designStrengthRating}/5 for design strength. ${review.internalValidityIssues} ${review.externalValidityIssues} Key limitations include: ${review.limitations.filter((l: string) => l.trim()).join('; ')}.`;
+      const relevance = `${review.whyIncludeExclude} ${review.intendedUse}`;
+      const apa = `${article.authors} (${article.year}). ${article.title}. ${article.journal}.${article.doi ? ` https://doi.org/${article.doi}` : ''}`;
+
+      return `
+        <div style="margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid #eee;">
+          <p style="margin:0 0 12px 0;text-indent:-2em;padding-left:2em;">${apa}</p>
+          <p style="margin:0 0 6px 0;"><strong>Summary:</strong> ${summary}</p>
+          <p style="margin:0 0 6px 0;"><strong>Critical Evaluation:</strong> ${evaluation}</p>
+          <p style="margin:0;"><strong>Relevance:</strong> ${relevance}</p>
+        </div>`;
+    }).join('');
+
+    content.innerHTML = `
+      <h1 style="font-size:16pt;font-weight:bold;margin-bottom:4px;">Annotated Bibliography</h1>
+      <p style="font-size:10pt;color:#666;margin-bottom:32px;">Generated ${today} · ${includedArticles.length} source${includedArticles.length !== 1 ? 's' : ''}</p>
+      ${entries}
+    `;
+
+    html2pdf().set({
+      margin: [20, 20, 20, 20],
+      filename: 'annotated_bibliography.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+    }).from(content).save();
+  };
 
   return (
     <PageWrapper title="Annotated Bibliography" subtitle="Generated from your included articles">
@@ -160,8 +197,8 @@ export default function BibliographyPage() {
               </div>
             );
           })}
-          <button className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors">
-            Export as Text (Placeholder)
+          <button onClick={exportToPdf} className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+            <Download className="w-4 h-4" /> Export as PDF
           </button>
         </div>
       )}

@@ -11,3 +11,6 @@ export const REVIEW_THRESHOLDS = {
 };
 
 export const IS_PILOT_MODE = isPilot;
+
+// Minimum average rubric score (out of 4.0) to show "Proposal Ready" completion signal
+export const PROPOSAL_COMPLETION_THRESHOLD = 3.0;
