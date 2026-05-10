@@ -79,10 +79,10 @@ export async function getCurrentUser() {
   return data;
 }
 
-export async function saveConsentFlag(_userId: string, consent: boolean) {
+export async function saveConsentFlag(_userId: string, consent: boolean, platformVersion: string) {
   const res = await apiFetch('/auth/consent', {
     method: 'POST',
-    body: JSON.stringify({ consent }),
+    body: JSON.stringify({ consent, platformVersion }),
   });
   return res.json();
 }

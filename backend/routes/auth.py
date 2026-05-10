@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from flask import current_app
 from models import db
 from models.user import User
+from models.consent_record import ConsentRecord
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -91,10 +92,21 @@ def save_consent():
 
     data = request.get_json()
     consent = data.get('consent')
+    platform_version = data.get('platformVersion', 'unknown')
+
     if consent is None:
         return jsonify({'error': 'Consent value required'}), 400
 
     user.consent_flag = bool(consent)
+
+    record = ConsentRecord(
+        id=str(uuid.uuid4()),
+        user_id=user.id,
+        consented=bool(consent),
+        consent_timestamp=datetime.utcnow(),
+        platform_version=platform_version,
+    )
+    db.session.add(record)
     db.session.commit()
 
     return jsonify({'success': True, 'consentFlag': user.consent_flag})

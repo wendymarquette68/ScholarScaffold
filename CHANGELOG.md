@@ -5,6 +5,74 @@ Format: `[version] — date — description`
 
 ---
 
+## [0.5.2] — 2026-05-10
+
+### IRB Consent Form — Compliance Gaps Patched + DOCX for IRB Submission
+
+Patched five missing elements in the in-app consent form to align with Common Rule requirements, and generated a Word document version of the consent form for the IRB application package.
+
+**Changes to `ConsentModal.tsx`:**
+- Updated crisis hotline from retired "National Suicide Prevention Lifeline / 1-800-273-8255" to current "988 Suicide and Crisis Lifeline / call or text 988"
+- Added research data retention language: data retained 3 years post-publication then securely destroyed
+- Added withdrawal data removal: participants may request their data excluded upon written/emailed request to PI
+- Added PI right to discontinue: standard language about researcher's right to stop a participant's involvement
+- Added confidentiality caveat: "absolute confidentiality cannot be guaranteed" (required Common Rule language)
+
+**New files:**
+- `IRB_Consent_Form_ScholarScaffold.docx` — full consent form formatted for IRB submission, includes paper signature block
+- `scripts/generate_consent_docx.py` — script that regenerates the DOCX from source if content changes
+
+**Files changed:**
+- `scholar-scaffold/src/components/common/ConsentModal.tsx`
+- `scripts/generate_consent_docx.py` (new)
+- `IRB_Consent_Form_ScholarScaffold.docx` (new)
+
+---
+
+## [0.5.1] — 2026-04-25
+
+### Consent Screen — Full IRB Information Sheet
+
+Replaced the abbreviated consent language with the complete Study Information Sheet from `ScholarScaffold_IRB_InfoSheet.docx` (Expedited Category 7), verbatim across all 12 sections.
+
+- Sections 1–11 render in the scrollable body
+- Section 12 (Online Consent Statement) renders as a 5-bullet list in the sticky footer, immediately above the YES/NO buttons
+- Added "Print or save a copy" button (calls `window.print()`) for IRB compliance — participants are entitled to retain a copy
+- Contact cards in Section 11 display PI, Co-I, and IRB Chair with correct office name (Office of Sponsored Programs and Research)
+- Phone numbers for PI and Co-I remain as `[Phone]` placeholder — must be filled in before going live
+
+**Files changed:**
+- `scholar-scaffold/src/components/common/ConsentModal.tsx`
+
+---
+
+## [0.5.0] — 2026-04-25
+
+### IRB-Compliant Consent Screen — Full Rebuild
+
+Replaced the placeholder consent modal with a full IRB-approved consent screen. The new screen displays the complete Towson University IRB consent language verbatim and stores a structured consent record in a dedicated database table.
+
+**UI changes:**
+- `ConsentModal.tsx` rewritten: scrollable content area with sticky footer — consent statement and YES/NO buttons always visible at the bottom regardless of scroll position. Mobile-responsive with stacked buttons on small screens.
+- `ConsentPage.tsx` updated: NO path now shows a brief confirmation screen ("full access to ScholarScaffold as a course tool, not enrolled in research dataset") before forwarding to dashboard. YES path navigates directly to dashboard.
+
+**Data changes:**
+- New `consent_records` table with fields: `user_id`, `consented` (boolean), `consent_timestamp`, `platform_version`. Created automatically on next deploy via `db.create_all()`.
+- Consent endpoint (`POST /api/auth/consent`) now writes a `ConsentRecord` row in addition to updating `users.consent_flag`. `platform_version` sent from frontend via `PLATFORM_VERSION` constant in `pilotConfig.ts`.
+- `users.consent_flag` preserved — still used by `ConsentGate` to enforce the one-time-only routing rule.
+- No research data collected or stored for users where `consented = false` (enforced at `backend/routes/irb.py`).
+
+**Files changed:**
+- `backend/models/consent_record.py` (new)
+- `backend/models/__init__.py`
+- `backend/routes/auth.py`
+- `scholar-scaffold/src/config/pilotConfig.ts`
+- `scholar-scaffold/src/services/api.ts`
+- `scholar-scaffold/src/components/common/ConsentModal.tsx`
+- `scholar-scaffold/src/pages/ConsentPage.tsx`
+
+---
+
 ## [0.4.0] — 2026-04-08
 
 ### IRB Research Logging — Full Wiring

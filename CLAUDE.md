@@ -12,6 +12,15 @@ ScholarScaffold is a research literacy and proposal development app for health p
 
 ---
 
+## Git — STANDING INSTRUCTION
+
+After completing any set of changes, commit and push to GitHub automatically. No need to ask first.
+- Stage only the files that were changed (never `git add -A` blindly)
+- Write a clear, concise commit message describing what changed and why
+- Push to the current branch (`git push`)
+
+---
+
 ## Changelog — STANDING INSTRUCTION
 
 After completing any set of changes in a session, update `CHANGELOG.md` with a new version entry. Include:

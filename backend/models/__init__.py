@@ -11,3 +11,4 @@ from .annotation import Annotation
 from .proposal_draft import ProposalDraft
 from .rubric_result import RubricResult
 from .irb_log import IrbLog
+from .consent_record import ConsentRecord
