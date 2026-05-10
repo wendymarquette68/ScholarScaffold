@@ -8,7 +8,7 @@ ScholarScaffold is a research literacy and proposal development app for health p
 **Database:** PostgreSQL (production), SQLite (local dev)
 **Auth:** JWT stored in localStorage
 **Repo:** https://github.com/wendymarquette68/ScholarScaffold
-**Live URL:** https://dashing-torrone-78de6c.netlify.app
+**Live URL:** https://scholarscaffold.netlify.app
 
 ---
 
