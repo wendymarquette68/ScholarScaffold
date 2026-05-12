@@ -42,8 +42,8 @@ export default function RegisterPage() {
         showToast(data.error || 'Registration failed.', 'error');
       }
     } catch {
-      setError('Cannot connect to server. Make sure the backend is running.');
-      showToast('Cannot connect to server.', 'error');
+      setError('The server is starting up — this can take up to 30 seconds on first use. Please wait a moment and try again.');
+      showToast('Server is starting up. Please wait 30 seconds and try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -125,6 +125,10 @@ export default function RegisterPage() {
             Sign In
           </Link>
         </p>
+
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+          First sign-in may take up to 30 seconds while the server starts up. If you see a connection error, please wait a moment and try again.
+        </div>
       </div>
     </div>
   );
