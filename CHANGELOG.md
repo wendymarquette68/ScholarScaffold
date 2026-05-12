@@ -5,6 +5,28 @@ Format: `[version] — date — description`
 
 ---
 
+## [0.5.3] — 2026-05-11
+
+### PMID Lookup + Validity Guidance Panels
+
+**AddArticlePage.tsx — PMID support:**
+- The DOI import field now also accepts PubMed IDs (any number-only string up to 8 digits)
+- Auto-detects format: numeric = PMID (calls NCBI eutils API), otherwise = DOI (CrossRef API)
+- PMID lookup populates title, authors (converted to APA format), year, journal, and DOI when available
+- Updated label and placeholder text to communicate both options clearly
+
+**ArticleReviewPage.tsx — Validity guidance panels:**
+- Added collapsible "What to look for" panels to both internal and external validity fields in Section B
+- Guidance is keyed to the student's selected study design (14 designs covered: RCT, Cohort, Case-Control, Cross-Sectional, Descriptive, Phenomenology, all 3 Grounded Theory variants, Case Study, Ethnography, Quasi-Experimental, Mixed Methods, Systematic Review, Meta-Analysis)
+- Falls back to general validity questions when no design is selected or design is "Not specified"
+- Panels are collapsed by default — students must actively choose to open them, preserving the scaffolded-inquiry approach
+
+**Files changed:**
+- `scholar-scaffold/src/pages/AddArticlePage.tsx`
+- `scholar-scaffold/src/pages/ArticleReviewPage.tsx`
+
+---
+
 ## [0.5.2] — 2026-05-10
 
 ### IRB Consent Form — Compliance Gaps Patched + DOCX for IRB Submission
