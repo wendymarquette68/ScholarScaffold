@@ -36,8 +36,8 @@ export default function LoginPage() {
         showToast(msg, 'error');
       }
     } catch {
-      setError('Cannot connect to server. Make sure the backend is running.');
-      showToast('Cannot connect to server.', 'error');
+      setError('The server is starting up — this can take up to 30 seconds on first use. Please wait a moment and try signing in again.');
+      showToast('Server is starting up. Please wait 30 seconds and try again.', 'error');
     } finally {
       setLoading(false);
     }
