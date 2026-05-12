@@ -5,7 +5,7 @@ import PageWrapper from '../components/layout/PageWrapper';
 import SectionAlert from '../components/common/SectionAlert';
 import { researchDesigns } from '../data/mockData';
 import { ArticleReview } from '../types';
-import { Trash2, Plus, ArrowRight, CheckCircle, Pencil } from 'lucide-react';
+import { Trash2, Plus, ArrowRight, CheckCircle, Pencil, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import GuidanceBanner from '../components/common/GuidanceBanner';
 import { REVIEW_THRESHOLDS } from '../config/pilotConfig';
 import { saveArticleReview, logResearchData } from '../services/api';
@@ -31,6 +31,235 @@ const designStrengthExpected: Record<string, { min: number; max: number; label: 
 
 const vagueLimitationTerms = ['small sample', 'bias', 'limited', 'more research'];
 
+const validityGuide: Record<string, { internal: string[]; external: string[] }> = {
+  'Randomized Controlled Trial': {
+    internal: [
+      'Was the randomization method clearly described (e.g., computer-generated sequence)?',
+      'Was allocation concealed so researchers could not predict group assignment?',
+      'Were participants and/or assessors blinded to group assignment?',
+      'Were groups similar at baseline on key characteristics?',
+      'Were dropouts handled with intention-to-treat analysis?',
+    ],
+    external: [
+      'How representative is the sample of the broader population you are studying?',
+      'Was the setting (clinic, community, university) similar to where results would be applied?',
+      'Could the intervention be replicated in real-world conditions?',
+      'Was the follow-up period long enough to reflect real outcomes?',
+    ],
+  },
+  'Cohort Study': {
+    internal: [
+      'Were exposed and unexposed groups comparable at baseline?',
+      'Was the exposure clearly defined and measured consistently?',
+      'Was loss to follow-up significant, and could it bias results?',
+      'Were potential confounders identified and statistically controlled?',
+      'Was the outcome measured the same way in both groups?',
+    ],
+    external: [
+      'How similar is the study population to the population you are studying?',
+      'Was the setting and time period relevant to your context?',
+      'Could the length of follow-up affect generalizability to your question?',
+    ],
+  },
+  'Case-Control Study': {
+    internal: [
+      'Were cases and controls drawn from the same underlying population?',
+      'Was recall bias addressed? (Cases may remember exposures differently than controls.)',
+      'Were exposure histories collected the same way for both groups?',
+      'Were potential confounders controlled in the analysis?',
+      'Was the definition of "case" clearly specified?',
+    ],
+    external: [
+      'How representative are the cases of all people with the condition?',
+      'Were controls appropriate — would they have become cases if they had developed the outcome?',
+      'Does the setting limit applicability to your population?',
+    ],
+  },
+  'Cross-Sectional Study': {
+    internal: [
+      'Were validated instruments used to measure both exposure and outcome?',
+      'Could reverse causation explain the association? (Which came first?)',
+      'Was the sampling method appropriate and clearly described?',
+      'Were non-responders or missing data addressed?',
+      'Were potential confounders accounted for in the analysis?',
+    ],
+    external: [
+      'How was the sample selected — is it representative of a larger population?',
+      'Was the snapshot taken at a typical time, or during an unusual period?',
+      'Does the single time point limit applicability across different contexts?',
+    ],
+  },
+  'Descriptive Study': {
+    internal: [
+      'Were data collection methods clearly described and applied consistently?',
+      'Were inclusion and exclusion criteria for the sample clear?',
+      'Was observer or reporting bias addressed?',
+      'Were measures standardized or validated?',
+    ],
+    external: [
+      'How broadly can the described population or phenomenon apply?',
+      'Is the setting unique in ways that limit generalizability?',
+      'Does this study describe your target population or a different one?',
+    ],
+  },
+  'Phenomenology': {
+    internal: [
+      'Did the researcher describe their positionality or bracket prior assumptions?',
+      'Was member checking used — did participants verify the interpretations?',
+      'Was peer debriefing or an audit trail described?',
+      'Were multiple data sources or collection methods used for triangulation?',
+      'Was the sample purposively selected for relevant lived experience?',
+    ],
+    external: [
+      'Can the themes transfer to other contexts or populations with similar experiences?',
+      'Was the sample diverse enough to capture the range of experience?',
+      'Is the phenomenon specific to this group, or does it extend more broadly?',
+    ],
+  },
+  'Grounded Theory — Classic (Glaserian)': {
+    internal: [
+      'Was theoretical sampling described — were new participants added as theory developed?',
+      'Was constant comparative analysis used throughout data collection and analysis?',
+      'Was saturation described — when did new data stop generating new concepts?',
+      'Did the researcher demonstrate openness to emergent theory without forcing frameworks?',
+      'Were memos used to document analytic thinking?',
+    ],
+    external: [
+      'Does the resulting theory apply beyond the specific sample studied?',
+      'Was the sample diverse enough to develop a substantive theory?',
+      'In what contexts would the generated theory hold or not hold?',
+    ],
+  },
+  'Grounded Theory — Constructivist (Charmazian)': {
+    internal: [
+      'Did the researcher address their own reflexivity and co-construction of meaning?',
+      'Was initial, focused, and theoretical coding described?',
+      'Were participant voices foregrounded in the analysis?',
+      'Was the social and historical context of participants considered?',
+      'Was saturation described?',
+    ],
+    external: [
+      'Is the constructed theory plausible and relevant to others in similar contexts?',
+      'Was the sample drawn from a sufficiently diverse range of experiences?',
+      'How does researcher positionality affect the transferability of findings?',
+    ],
+  },
+  'Grounded Theory — Straussian/Corbinian': {
+    internal: [
+      'Were open, axial, and selective coding steps described?',
+      'Was the conditional matrix or paradigm model used to map context and conditions?',
+      'Was constant comparative analysis applied throughout?',
+      'Was saturation achieved and described?',
+      'Was an audit trail or memo-writing used?',
+    ],
+    external: [
+      'Does the resulting theory apply to populations beyond those studied?',
+      'Was the sample diverse and theoretically appropriate?',
+      'Are the conditions under which the theory applies clearly described?',
+    ],
+  },
+  'Case Study': {
+    internal: [
+      'Was the rationale for case selection clearly explained?',
+      'Were multiple data sources used for triangulation (interviews, documents, observation)?',
+      'Was the researcher\'s role and potential bias addressed?',
+      'Were rival explanations considered and addressed?',
+      'Was an audit trail or chain of evidence described?',
+    ],
+    external: [
+      'Can findings transfer analytically to other similar cases or contexts?',
+      'How unique is this case — is it revelatory, typical, or extreme?',
+      'Was the case described in enough detail to judge transferability?',
+    ],
+  },
+  'Ethnography': {
+    internal: [
+      'How long was the researcher immersed in the field (prolonged engagement)?',
+      'Was researcher influence on the setting addressed (reactivity)?',
+      'Was reflexivity — the researcher\'s role and biases — explicitly described?',
+      'Were multiple data collection methods used (observation, interviews, documents)?',
+      'Was member checking used to verify interpretations?',
+    ],
+    external: [
+      'Is the cultural context specific enough that findings may not transfer elsewhere?',
+      'Was the community described in enough detail to assess comparability?',
+      'Can key cultural patterns be relevant to other similar groups?',
+    ],
+  },
+  'Quasi-Experimental': {
+    internal: [
+      'How were comparison groups selected — were they equivalent at baseline?',
+      'What controls compensated for the lack of randomization (matching, statistical adjustment)?',
+      'Was selection bias addressed?',
+      'Were confounders identified and controlled in the analysis?',
+      'Was there a pre-test measurement to establish baseline equivalence?',
+    ],
+    external: [
+      'How representative are the groups of the broader population?',
+      'Was the setting and context generalizable to other environments?',
+      'Could the control method used limit applicability in other settings?',
+    ],
+  },
+  'Mixed Methods': {
+    internal: [
+      'Were both quantitative and qualitative components described with appropriate rigor?',
+      'Was the integration of methods explicitly described — where and how were they combined?',
+      'Did integration add insight beyond either method alone?',
+      'Were threats to validity addressed separately for each component?',
+      'Did the design type (convergent, explanatory, exploratory) match the research question?',
+    ],
+    external: [
+      'Does the mixed-methods design make findings more transferable than either method alone?',
+      'How do the different samples in each component affect generalizability?',
+      'Are findings from both components applicable to your context?',
+    ],
+  },
+  'Systematic Review': {
+    internal: [
+      'Were inclusion and exclusion criteria defined before the search was conducted?',
+      'Were multiple databases searched with a reproducible search strategy?',
+      'Was risk of bias assessed for each included study?',
+      'Did at least two reviewers independently screen and extract data?',
+      'Was publication bias assessed (e.g., funnel plot)?',
+    ],
+    external: [
+      'Do the included studies represent the range of populations and settings you care about?',
+      'Is the review recent enough to include current evidence?',
+      'Does heterogeneity across included studies limit conclusions for your context?',
+    ],
+  },
+  'Meta-Analysis': {
+    internal: [
+      'Were studies statistically homogeneous enough to combine (I² statistic)?',
+      'Was heterogeneity assessed and explained?',
+      'Were fixed vs. random effects models justified by the data?',
+      'Were individual study quality ratings used to weight results?',
+      'Was publication bias assessed and accounted for?',
+    ],
+    external: [
+      'Do the pooled studies represent your population of interest?',
+      'Did diversity of included studies improve or complicate generalizability?',
+      'Does the combined effect size apply to the context of your review?',
+    ],
+  },
+};
+
+const defaultValidityGuide = {
+  internal: [
+    'Were the instruments or measures valid and reliable?',
+    'Was there a clear rationale for the study design chosen?',
+    'Were potential sources of bias identified and addressed?',
+    'Were data collection methods described in enough detail to evaluate consistency?',
+    'Were confounders or alternative explanations considered?',
+  ],
+  external: [
+    'How similar is the study sample to the population you are studying?',
+    'Was the setting comparable to the context where results would be applied?',
+    'Does the time period of the study affect its applicability today?',
+    'Are there characteristics of this sample that limit generalizability?',
+  ],
+};
+
 const emptyReview: ArticleReview = {
   researchQuestion: '', studyDesign: '', sample: '', keyFindings: '', significance: '',
   designStrengthRating: 3, internalValidityIssues: '', externalValidityIssues: '',
@@ -47,6 +276,8 @@ export default function ArticleReviewPage() {
   const article = articles.find(a => a.id === id);
   const [activeSection, setActiveSection] = useState<'A' | 'B' | 'C'>('A');
   const [review, setReview] = useState<ArticleReview>(article?.review || emptyReview);
+  const [showInternalGuide, setShowInternalGuide] = useState(false);
+  const [showExternalGuide, setShowExternalGuide] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -330,12 +561,68 @@ export default function ArticleReviewPage() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Internal Validity Issues *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">Internal Validity Issues *</label>
+                <button
+                  type="button"
+                  onClick={() => setShowInternalGuide(v => !v)}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  What to look for
+                  {showInternalGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              {showInternalGuide && (
+                <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800">
+                  <p className="font-semibold mb-1.5">
+                    {review.studyDesign && review.studyDesign !== 'Not specified'
+                      ? `Internal validity questions for ${review.studyDesign}:`
+                      : 'General internal validity questions (select a study design above for specific guidance):'}
+                  </p>
+                  <ul className="space-y-1">
+                    {(validityGuide[review.studyDesign] || defaultValidityGuide).internal.map((q, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <span className="text-blue-400 flex-shrink-0 mt-0.5">→</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <textarea value={review.internalValidityIssues} onChange={e => updateReview('internalValidityIssues', e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">External Validity Issues *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">External Validity Issues *</label>
+                <button
+                  type="button"
+                  onClick={() => setShowExternalGuide(v => !v)}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  What to look for
+                  {showExternalGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              {showExternalGuide && (
+                <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800">
+                  <p className="font-semibold mb-1.5">
+                    {review.studyDesign && review.studyDesign !== 'Not specified'
+                      ? `External validity questions for ${review.studyDesign}:`
+                      : 'General external validity questions (select a study design above for specific guidance):'}
+                  </p>
+                  <ul className="space-y-1">
+                    {(validityGuide[review.studyDesign] || defaultValidityGuide).external.map((q, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <span className="text-blue-400 flex-shrink-0 mt-0.5">→</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <textarea value={review.externalValidityIssues} onChange={e => updateReview('externalValidityIssues', e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none h-20 resize-none" />
             </div>

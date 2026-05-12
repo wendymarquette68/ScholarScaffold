@@ -22,42 +22,78 @@ export default function AddArticlePage() {
     abstract: existingArticle?.abstract || '',
   });
 
-  const [doiInput, setDoiInput] = useState(existingArticle?.doi || '');
+  const [lookupInput, setLookupInput] = useState(existingArticle?.doi || '');
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
-  const handleImportDoi = async () => {
-    const raw = doiInput.trim();
+  const isPmid = (input: string) => /^\d{1,8}$/.test(input.trim());
+
+  const handleImport = async () => {
+    const raw = lookupInput.trim();
     if (!raw) return;
-    // Strip URL prefix if pasted as full URL
-    const doi = raw.replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
     setImporting(true);
     setImportError('');
     try {
-      const res = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
-      if (!res.ok) throw new Error('DOI not found');
-      const data = await res.json();
-      const msg = data.message;
-      const title = msg.title?.[0] || '';
-      const authors = (msg.author || [])
-        .map((a: { family?: string; given?: string }) =>
-          a.family && a.given ? `${a.family}, ${a.given[0]}.` : a.family || ''
-        )
-        .join(', ');
-      const year = msg.published?.['date-parts']?.[0]?.[0] || msg['published-print']?.['date-parts']?.[0]?.[0] || new Date().getFullYear();
-      const journal = msg['container-title']?.[0] || msg['short-container-title']?.[0] || '';
-      setFormData(prev => ({
-        ...prev,
-        title: title || prev.title,
-        authors: authors || prev.authors,
-        year: year || prev.year,
-        journal: journal || prev.journal,
-        doi,
-      }));
+      if (isPmid(raw)) {
+        const res = await fetch(
+          `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${encodeURIComponent(raw)}&retmode=json`
+        );
+        if (!res.ok) throw new Error('PMID not found');
+        const data = await res.json();
+        const article = data.result?.[raw];
+        if (!article || article.error) throw new Error('PMID not found');
+        const title = (article.title || '').replace(/<[^>]+>/g, '');
+        const authors = (article.authors || [])
+          .filter((a: { authtype: string }) => a.authtype === 'Author')
+          .map((a: { name: string }) => {
+            const parts = a.name.split(' ');
+            const last = parts[0] || '';
+            const initials = parts.slice(1).join('').split('').map((c: string) => `${c}.`).join('');
+            return initials ? `${last}, ${initials}` : last;
+          })
+          .join(', ');
+        const yearMatch = (article.pubdate || '').match(/\d{4}/);
+        const year = yearMatch ? parseInt(yearMatch[0]) : new Date().getFullYear();
+        const journal = article.source || '';
+        const doiEntry = (article.articleids || []).find(
+          (id: { idtype: string; value: string }) => id.idtype === 'doi'
+        );
+        const doi = doiEntry?.value || '';
+        setFormData(prev => ({
+          ...prev,
+          title: title || prev.title,
+          authors: authors || prev.authors,
+          year: year || prev.year,
+          journal: journal || prev.journal,
+          doi: doi || prev.doi,
+        }));
+      } else {
+        const doi = raw.replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+        const res = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+        if (!res.ok) throw new Error('DOI not found');
+        const data = await res.json();
+        const msg = data.message;
+        const title = msg.title?.[0] || '';
+        const authors = (msg.author || [])
+          .map((a: { family?: string; given?: string }) =>
+            a.family && a.given ? `${a.family}, ${a.given[0]}.` : a.family || ''
+          )
+          .join(', ');
+        const year = msg.published?.['date-parts']?.[0]?.[0] || msg['published-print']?.['date-parts']?.[0]?.[0] || new Date().getFullYear();
+        const journal = msg['container-title']?.[0] || msg['short-container-title']?.[0] || '';
+        setFormData(prev => ({
+          ...prev,
+          title: title || prev.title,
+          authors: authors || prev.authors,
+          year: year || prev.year,
+          journal: journal || prev.journal,
+          doi,
+        }));
+      }
     } catch {
-      setImportError('Could not find article. Check the DOI and try again, or enter details manually.');
+      setImportError('Could not find article. Check the DOI or PMID and try again, or enter details manually.');
     } finally {
       setImporting(false);
     }
@@ -105,22 +141,22 @@ export default function AddArticlePage() {
         />
       )}
 
-      {/* DOI Import */}
+      {/* DOI / PMID Import */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 max-w-2xl">
-        <p className="text-sm font-medium text-blue-800 mb-2">Import from DOI (optional)</p>
-        <p className="text-xs text-blue-600 mb-3">Enter a DOI to auto-fill the article details. You can edit anything after importing.</p>
+        <p className="text-sm font-medium text-blue-800 mb-2">Import from DOI or PMID (optional)</p>
+        <p className="text-xs text-blue-600 mb-3">Paste a DOI (e.g. 10.1016/...) or a PubMed ID (numbers only) to auto-fill article details. You can edit anything after importing.</p>
         <div className="flex gap-2">
           <input
             type="text"
-            value={doiInput}
-            onChange={e => setDoiInput(e.target.value)}
-            placeholder="e.g. 10.1016/j.example.2023.01.001"
+            value={lookupInput}
+            onChange={e => setLookupInput(e.target.value)}
+            placeholder="DOI: 10.1016/j.example.2023.01.001  —or—  PMID: 12345678"
             className="flex-1 px-4 py-2 border border-blue-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 outline-none"
           />
           <button
             type="button"
-            onClick={handleImportDoi}
-            disabled={importing || !doiInput.trim()}
+            onClick={handleImport}
+            disabled={importing || !lookupInput.trim()}
             className="flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {importing ? <Loader className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
